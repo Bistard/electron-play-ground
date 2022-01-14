@@ -1,0 +1,12 @@
+.sash {
+    position: absolute;
+
+    left: 100px;
+
+    width: 4px;
+    height: 100%;
+
+    cursor: w-resize;
+
+    background-color: aquamarine;
+}
