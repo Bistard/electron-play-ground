@@ -7,7 +7,7 @@
     "build": "webpack --config webpack.config.js --stats-error-details",
     "watch": "tsc -w",
     "start": "npm run build && electron .",
-    "test": "mocha --ui tdd"
+    "test": "mocha --ui tdd -r jsdom-global/register"
   },
   "repository": "https://github.com/electron/electron-quick-start-typescript",
   "keywords": [
@@ -24,6 +24,8 @@
     "@types/mocha": "^9.0.0",
     "acorn": "^8.7.0",
     "electron": "^13.1.7",
+    "jsdom": "19.0.0",
+    "jsdom-global": "3.0.2",
     "mocha": "^9.1.4",
     "ts-loader": "^9.2.6",
     "ts-node": "^10.4.0",

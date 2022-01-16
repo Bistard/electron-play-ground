@@ -1,5 +1,5 @@
-import { Scrollable } from "src/base/browser/basic/scrollable/scrollable";
-import { requestAnimationFrame } from "src/base/common/animation";
+import { Scrollable } from "src/base/common/scrollable";
+import * as animation from "src/base/common/animation";
 
 // [basic]
 
@@ -9,7 +9,7 @@ document.body.appendChild(container);
 
 // [end]
 
-const scrollable = new Scrollable(125);
+// const scrollable = new Scrollable(125);
 
-let count = 0;
-requestAnimationFrame(() => {console.log(window || self || 'undefine')});
+// let count = 0;
+// animation.requestAnimationFrame(() => {console.log(window || self || 'undefine')});
