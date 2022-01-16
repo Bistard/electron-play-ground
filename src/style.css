@@ -1,6 +1,6 @@
 
-@import "./base/browser/sash/sash.css";
-@import "./base/browser/scrollable/scrollable.css";
+@import "./base/browser/basic/sash/sash.css";
+@import "./base/browser/basic/scrollable/scrollable.css";
 
 body {
     margin: 0px;
