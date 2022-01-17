@@ -53,6 +53,13 @@ export abstract class Widget extends Disposable implements IWidget {
         }));
     }
 
+    /* Registers a callback function when the provided element is mousedowned */
+    public onMousedown(element: HTMLElement, callback: (event: any) => void): void {
+        this.__register(addDisposableListener(element, EventType.mousedown, (e: any) => {
+            callback(e);
+        }));
+    }
+
     public render(container: HTMLElement): void {
         this._element = container;
     }
