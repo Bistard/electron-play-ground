@@ -52,8 +52,11 @@ export class EventEmitter implements IEventEmitter {
         }
         return returnValues;
     }
-
 }
+
+/** @deprecated Use Emitter instead */
+export const EVENT_EMITTER = new EventEmitter();
+
 
 /** 
  * @readonly A listener is a callback function that once the callback is invoked,
@@ -169,6 +172,3 @@ export class Emitter<T> implements IDisposable {
 		}
 	}
 }
-
-/** @deprecated Use Emitter instead */
-export const EVENT_EMITTER = new EventEmitter();
