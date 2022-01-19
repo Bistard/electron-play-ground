@@ -203,7 +203,7 @@ export class Scrollable implements IScrollable {
         /**
          * recalculates the position of the slider.
          */
-        this._sliderPosition = this._scrollPosition * this._sliderRatio;
+		 this._sliderPosition = Math.round(this._scrollPosition * this._sliderRatio);
     }
 
 }
