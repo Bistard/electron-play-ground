@@ -1,12 +1,9 @@
-import { ScrollBarStatus } from "src/base/browser/basic/scrollbar/scrollbarStatus";
 import { Widget } from "src/base/browser/basic/widget";
-import { IScrollEvent, Scrollable } from "src/base/common/scrollable";
-
+import { Scrollable } from "src/base/common/scrollable";
 
 export interface IAbstractScrollbarOptions {
     
-    scrollable: Scrollable;
-    status: ScrollBarStatus,
+    scrollable: Scrollable,
 
 }
 
@@ -20,7 +17,6 @@ export abstract class AbstractScrollbar extends Widget {
     protected _slider: HTMLElement;
 
     protected _scrollable: Scrollable;
-    protected _status: ScrollBarStatus;
 
     // [constructor]
 
@@ -31,10 +27,25 @@ export abstract class AbstractScrollbar extends Widget {
         this._slider.className = 'scroll-slider';
 
         this._scrollable = opts.scrollable;
-        this._status = opts.status;
     }
 
     // [abstractions]
+
+    /**
+     * @description Will be invoked once scrolling happens.
+     * @param event The wheel event.
+     */
+    public abstract onDidScroll(event: WheelEvent): void;
+
+     /**
+      * @description Returns the future absolute position. the returned position 
+      * will be resolved if the next animation frame the slider will exceeds the 
+      * scrollbar.
+      *  
+      * @param event The wheel event.
+      * @returns the future legal position.
+      */
+    public abstract getFutureSliderPosition(event: WheelEvent): number;
 
     /**
      * @description Renders the whole scrollbar.
@@ -49,13 +60,6 @@ export abstract class AbstractScrollbar extends Widget {
      */
     protected abstract __updateSlider(size: number, position: number): void;
 
-    /**
-     * @description Will be invoked once scrolling happens.
-     * @param event The scroll event.
-     * @returns If needs to rerender.
-     */
-    public abstract onDidScroll(event: IScrollEvent): boolean;
-
     // [methods]
 
     /**
@@ -67,16 +71,16 @@ export abstract class AbstractScrollbar extends Widget {
     public override render(element: HTMLElement): void {
         super.render(element);
         
-        this.__renderScrollbar(this._status.getScrollbarSize());
-        this.__renderSlider(this._status.getSliderSize(), this._status.getSliderPosition());
+        this.__renderScrollbar(this._scrollable.getScrollbarSize());
+        this.__renderSlider(this._scrollable.getSliderSize(), this._scrollable.getSliderPosition());
     }
 
     /**
      * 
      */
     public rerender(): void {
-        this.__renderScrollbar(this._status.getScrollbarSize());
-        this.__updateSlider(this._status.getSliderSize(), this._status.getSliderPosition());
+        this.__renderScrollbar(this._scrollable.getScrollbarSize());
+        this.__updateSlider(this._scrollable.getSliderSize(), this._scrollable.getSliderPosition());
     }
 
     // [protected methods]

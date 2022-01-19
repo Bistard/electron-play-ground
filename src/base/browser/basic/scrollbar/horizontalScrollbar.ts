@@ -1,28 +1,39 @@
 import { AbstractScrollbar } from "src/base/browser/basic/scrollbar/abstractScrollbar";
-import { ScrollBarStatus } from "src/base/browser/basic/scrollbar/scrollbarStatus";
-import { IScrollEvent, Scrollable } from "src/base/common/scrollable";
+import { Scrollable } from "src/base/common/scrollable";
 
 export class HorizontalScrollbar extends AbstractScrollbar {
 
-    constructor(scrollable: Scrollable, size: number) {
-        const dimension = scrollable.getDimension();
-        const position = scrollable.getPosition();
-        super({
-            scrollable: scrollable,
-            status: new ScrollBarStatus(
-                size,
-                dimension.width,
-                dimension.scrollWidth,
-                position.scrollLeft
-            )
-        });
-
+    constructor(scrollable: Scrollable) {
+        super({ scrollable: scrollable });
     }
 
     // [methods]
 
-    public onDidScroll(event: IScrollEvent): boolean {
-        return false;
+    public onDidScroll(event: WheelEvent): void {
+        // either no changes or not required, we do nothing
+        if (event.deltaX === 0 || this._scrollable.required() === false) {
+            return;
+        }
+        this.rerender();
+    }
+
+    public getFutureSliderPosition(event: WheelEvent): number {
+        const newPosition = this._scrollable.getScrollPosition() + event.deltaX;
+        const viewportSize = this._scrollable.getViewportSize();
+
+        // before the scrollbar
+        if (newPosition < 0) {
+            return 0;
+        }
+
+        // exceeds the scrollbar
+        // FIX
+        if (newPosition > viewportSize) {
+            return viewportSize;
+        } 
+        
+        // returns as normal
+        return newPosition;
     }
 
     // [override abstract methods]

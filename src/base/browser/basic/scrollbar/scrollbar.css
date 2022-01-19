@@ -6,6 +6,7 @@
 .scroll-bar > .scroll-slider {
     position: absolute;
     background-color: #d1d1d1;
+    overflow-y: hidden;
 }
 
 .scroll-bar.horizontal {

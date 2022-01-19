@@ -2,18 +2,13 @@ import { AbstractScrollbar } from "src/base/browser/basic/scrollbar/abstractScro
 import { HorizontalScrollbar } from "src/base/browser/basic/scrollbar/horizontalScrollbar";
 import { VerticalScrollbar } from "src/base/browser/basic/scrollbar/verticalScrollbar";
 import { IWidget, Widget } from "src/base/browser/basic/widget";
-import { IScrollableWidgetCreationOpts, IScrollableWidgetOpts, resolveScrollableWidgetOpts, ScrollbarType } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
-import { INewScrollDimension, INewScrollPosition, IScrollDimension, IScrollEvent, IScrollPosition, Scrollable } from "src/base/common/scrollable";
+import { IScrollableWidgetCreationOpts, IScrollableWidgetExtensionOpts, IScrollableWidgetOpts, resolveScrollableWidgetExtensionOpts, ScrollbarType } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
+import { Scrollable } from "src/base/common/scrollable";
 
 export interface IAbstractScrollableWidget extends IWidget {
 
-    getScrollDimension(): IScrollDimension;
-    getScrollPosition(): IScrollPosition;
-
-    setScrollDimension(update: INewScrollDimension): void;
-
     render(element: HTMLElement): void;
-
+    
 }
 
 export abstract class AbstractScrollableWidget extends Widget implements IAbstractScrollableWidget {
@@ -23,85 +18,101 @@ export abstract class AbstractScrollableWidget extends Widget implements IAbstra
     private _opts: IScrollableWidgetOpts;
 
     protected _scrollable: Scrollable;
-
     protected _scrollbar: AbstractScrollbar;
 
     // [constructor]
 
-    constructor(scrollable: Scrollable, opts: IScrollableWidgetCreationOpts) {
+    constructor(opts: IScrollableWidgetCreationOpts, extensionOpts: IScrollableWidgetExtensionOpts) {
         super();
 
-        this._opts = resolveScrollableWidgetOpts(opts);
+        this._opts = resolveScrollableWidgetExtensionOpts(extensionOpts);
 
-        this._scrollable = scrollable;
+        // scrollable creation
+        this._scrollable = new Scrollable(
+            this._opts.scrollbarSize,
+            opts.viewportSize,
+            opts.scrollSize,
+            opts.scrollPosition
+        );
 
-        // create scrollbar
+        // scrollbar creation
         if (this._opts.scrollbarType === ScrollbarType.vertical) {
-            this._scrollbar = new VerticalScrollbar(scrollable, this._opts.scrollbarSize);
+            this._scrollbar = new VerticalScrollbar(this._scrollable);
         } else {
-            this._scrollbar = new HorizontalScrollbar(scrollable, this._opts.scrollbarSize);
+            this._scrollbar = new HorizontalScrollbar(this._scrollable);
         }
-
-        this._scrollable.onDidScroll((e: IScrollEvent) => {
-            this._onDidScroll(e);
-        })
-
     }
 
     // [methods - get]
 
-    public getScrollDimension(): IScrollDimension {
-        return this._scrollable.getDimension();
-    }
-
-    public getScrollPosition(): IScrollPosition {
-        return this._scrollable.getPosition();
+    public getScrollable(): Scrollable {
+        return this._scrollable;
     }
 
     // [methods - set]
-
-    public setScrollDimension(update: INewScrollDimension): void {
-        this._scrollable.setDimension(update);
-    }
 
     // [methods]
 
     public override render(element: HTMLElement): void {
         super.render(element);
+        
+        // register on mouse wheel listener
+        this.__onMouseWheel();
+
+        // render scrollbar
         const scrollbarElement = document.createElement('div');
         this._scrollbar.render(scrollbarElement);
         element.appendChild(scrollbarElement);
     }
 
+    private __onMouseWheel(): void {
+        if (this._element === undefined) {
+            return;
+        }
+
+        this._element.onwheel = (e: WheelEvent): void => {
+            
+            const currPosition = this._scrollable.getSliderPosition();
+            const futurePosition = this._scrollbar.getFutureSliderPosition(e);
+            
+            // scrolling does not change, we do nothing
+            if (currPosition === futurePosition) {
+                return;
+            }
+
+            // did scroll
+            this.__onDidScroll(e);
+            
+        };
+
+    }
+
+    // [abstraction]
+
+    /**
+     * @description Rerenders the {@link ScrollableWidget}.
+     */
+    protected abstract __rerender(): void;
+
     // [private helper methods]
 
     /**
      * @description Invokes when scroll happens.
-     * @param event The standard scroll event.
+     * @param event The wheel event when scroll happens.
      */
-    private _onDidScroll(event: IScrollEvent): void {
+    private __onDidScroll(event: WheelEvent): void {
+        
+        event.preventDefault();
+
+        // updates scrollable position
+        const newScrollPosition = this._scrollable.getScrollPosition() + event.deltaY * this._opts.mouseWheelScrollSensibility;
+        this._scrollable.setScrollPosition(newScrollPosition);
+
+        // updates scrollbar
         this._scrollbar.onDidScroll(event);
-        this._rerender();
-    }
 
-    /**
-     * @description Rerenders the scrollbar and its slider.
-     */
-    private _rerender(): void {
-        this._scrollbar.rerender();
+        // rerender
+        this.__rerender();
     }
-
+    
 }
-
-export class SmoothScrollableWidget extends AbstractScrollableWidget {
-
-    constructor(scrollable: Scrollable, opts: IScrollableWidgetCreationOpts) {
-        super(scrollable, opts);
-    }
-
-    public setScrollPosition(update: INewScrollPosition): void {
-        this._scrollable.setScrollPositionSmoothly(update);
-    }
-
-}
-

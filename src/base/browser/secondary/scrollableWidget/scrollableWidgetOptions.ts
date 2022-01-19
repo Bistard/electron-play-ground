@@ -8,6 +8,28 @@ export enum ScrollbarType {
 export interface IScrollableWidgetCreationOpts {
 
     /**
+     * vertical: height of the viewport
+     * horizontal: width of the viewport
+     */
+    viewportSize: number;
+
+    /**
+     * vertical: height of the actual scrolling area
+     * horizontal: width of the actual scrolling area
+     */
+    scrollSize: number;
+
+    /**
+     * vertical: top of the actual scrolling area
+     * horizontal: left of the actual scrolling area
+     */
+    scrollPosition: number;
+
+}
+
+export interface IScrollableWidgetExtensionOpts {
+
+    /**
      * @readonly Types of scrollbar that the widget supports.
      * @default ScrollbarType.vertical
      * 
@@ -16,17 +38,18 @@ export interface IScrollableWidgetCreationOpts {
     scrollbarType?: ScrollbarType;
 
     /**
-	 * @readonly Makes mouse wheel scrolling smooth.
-	 * @default true
-	 */
-	mouseWheelScrollSmoothly?: boolean;
-
-    /**
-     * @readonly A multiplier to be used on the `deltaX` and `deltaY` of mouse 
-     * wheel scroll events.
+     * @readonly A multiplier to be used on the `deltaX` and `deltaY` of a mouse 
+     * wheel scroll event.
 	 * @default 1
      */
     mouseWheelScrollSensibility?: number;
+
+    /**
+     * @readonly A multiplier to be used for wheel scroll event when `ALT` 
+     * keyword is pressed.
+     * @default 5
+     */
+    mouseWheelFastScrollSensibility?: number;
 
     /**
      * @readonly When the scrollbar is vertical, means the width of the scrollbar.
@@ -34,30 +57,39 @@ export interface IScrollableWidgetCreationOpts {
      * @default 10
      */
     scrollbarSize?: number;
+
+    /**
+     * @readonly When this option is on, mouse wheel goes up, the slider goes 
+     * down.
+     * @default false
+     */
+    reverseMouseWheelDirection?: boolean;
 }
 
 export interface IScrollableWidgetOpts {
 
     scrollbarType: ScrollbarType;
-    mouseWheelScrollSmoothly: boolean;
     mouseWheelScrollSensibility: number;
     scrollbarSize: number;
+    mouseWheelFastScrollSensibility: number;
+    reverseMouseWheelDirection: boolean;
 
 }
 
 /**
  * @description Resolves the given possible incompleted option into a complete 
- * option.
- * @param opts An option might not be completed.
- * @returns A resolved {@link IScrollableWidgetOpts}
+ * option with default values.
+ * @param opts A scrollable widget option might not be completed.
+* @returns A resolved option {@link IScrollableWidgetOpts}
  */
-export function resolveScrollableWidgetOpts(opts: IScrollableWidgetCreationOpts): IScrollableWidgetOpts {
+export function resolveScrollableWidgetExtensionOpts(opts: IScrollableWidgetExtensionOpts): IScrollableWidgetOpts {
 
     return {
-        scrollbarType:               ifOrDefault(opts.scrollbarType, ScrollbarType.vertical),
-        mouseWheelScrollSmoothly:    ifOrDefault(opts.mouseWheelScrollSmoothly, true),
-        mouseWheelScrollSensibility: ifOrDefault(opts.mouseWheelScrollSensibility, 1),
-        scrollbarSize:               ifOrDefault(opts.scrollbarSize, 10),
+        scrollbarType:                   ifOrDefault(opts.scrollbarType, ScrollbarType.vertical),
+        mouseWheelScrollSensibility:     ifOrDefault(opts.mouseWheelScrollSensibility, 1),
+        mouseWheelFastScrollSensibility: ifOrDefault(opts.mouseWheelFastScrollSensibility, 5),
+        scrollbarSize:                   ifOrDefault(opts.scrollbarSize, 10),
+        reverseMouseWheelDirection:      ifOrDefault(opts.reverseMouseWheelDirection, false),
     };
 
 }

@@ -1,7 +1,16 @@
-import { Widget } from "src/base/browser/basic/widget";
-import { SmoothScrollableWidget } from "src/base/browser/secondary/scrollableWidget/scrollableWidget";
+import { AbstractScrollableWidget } from "src/base/browser/secondary/scrollableWidget/scrollableWidget";
+import { IScrollableWidgetCreationOpts, IScrollableWidgetExtensionOpts } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
 import { DOMSize } from "src/base/common/dom";
-import { Scrollable } from "src/base/common/scrollable";
+
+class TestSmoothScrollableWidget extends AbstractScrollableWidget {
+
+    constructor(opts: IScrollableWidgetCreationOpts, extensionOpts: IScrollableWidgetExtensionOpts) {
+        super(opts, extensionOpts);
+    }
+
+    protected override __rerender(): void {}
+
+}
 
 // [basic]
 
@@ -14,16 +23,15 @@ scrollableElement.appendChild(scrollbarElement);
 
 // [end]
 
-const scrollable = new Scrollable(125);
-scrollable.setDimension({
-    height: DOMSize.getContentHeight(scrollableElement),
-    scrollHeight: DOMSize.getContentHeight(scrollableElement) * 2,
-});
-const smoothScrollableWidget = new SmoothScrollableWidget(scrollable, {});
+const creationOpts: IScrollableWidgetCreationOpts = {
+    viewportSize: DOMSize.getContentHeight(scrollableElement),
+    scrollSize: DOMSize.getContentHeight(scrollableElement) * 2,
+    scrollPosition: 0
+};
+
+const extensionOpts: IScrollableWidgetExtensionOpts = {
+    
+};
+
+const smoothScrollableWidget = new TestSmoothScrollableWidget(creationOpts, extensionOpts);
 smoothScrollableWidget.render(scrollableElement);
-
-scrollableElement.onwheel = (e: WheelEvent)=> {
-    e.preventDefault();
-
-    smoothScrollableWidget.setScrollPosition({scrollTop: e.deltaY});
-}
