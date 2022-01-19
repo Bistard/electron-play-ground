@@ -326,7 +326,7 @@ export class Scrollable implements IDisposable {
      * @note This result might be an intermediate scroll position, as there might 
      * be an ongoing smooth scroll animation.
 	 */
-	 public getCurrentPosition(): IScrollPosition {
+	 public getPosition(): IScrollPosition {
 		return this._status;
 	}
 
