@@ -1,4 +1,7 @@
 
+/**
+ * @description Checks if it is the type `object`.
+ */
 export function isObject(obj: any): obj is any {
     return typeof obj === "object"
         && obj !== null
@@ -7,6 +10,9 @@ export function isObject(obj: any): obj is any {
         && !(obj instanceof Date);
 }
 
+/**
+ * @description Checks if it is an empty object.
+ */
 export function isEmptyObject(obj: any): boolean {
     if (!isObject(obj)) {
         return false;
@@ -21,6 +27,9 @@ export function isEmptyObject(obj: any): boolean {
     return true;
 }
 
+/**
+ * @description Checks if it is an array.
+ */
 export function isArray(array: any): array is any[] {
 	return Array.isArray(array);
 }
