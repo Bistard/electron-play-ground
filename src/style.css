@@ -18,4 +18,5 @@ body {
     height: 100%;
 
     background-color: azure;
+    overflow: hidden;
 }

@@ -2,9 +2,20 @@
 /**
  * @readonly Scroll wheel event type.
  */
-export interface IScrollEvent {
+ export interface IScrollEvent {
+	/**
+	 * double representing the horizontal scroll amount.
+	 */
 	deltaX: number;
+
+	/**
+	 * double representing the vertical scroll amount.
+	 */
     deltaY: number;
+
+	/**
+	 * double representing the scroll amount for the z-axis.
+	 */
     deltaZ: number;
 	
 	preventDefault(): void;
@@ -12,7 +23,36 @@ export interface IScrollEvent {
 }
 
 export interface IScrollable {
-	// TODO
+	
+	setScrollbarSize(scrollbarSize: number): void;
+	setViewportSize(viewportSize: number): void;
+	setScrollSize(scrollSize: number): void;
+	setScrollPosition(scrollPosition: number): void;
+
+	getScrollbarSize(): number;
+	getViewportSize(): number;
+	getScrollSize(): number;
+	getScrollPosition(): number;
+	getSliderSize(): number;
+	getSliderPosition(): number;
+    getSliderMaxPosition(): number;
+    getSliderRatio(): number;
+	required(): boolean;
+
+	/**
+	 * @description Generates our own defined scroll event.
+	 * @param event The raw {@link WheelEvent}.
+	 */
+	createScrollEvent(event: WheelEvent): IScrollEvent;
+
+    /**
+     * @description Computes a new scroll position when the slider / mouse moves
+     * a delta amount of pixels.
+     * @param delta A change in slider / mouse position.
+     * @returns the new scroll position relatives to the moved slider.
+     */
+    getScrollPositionFromDelta(delta: number): number;
+
 }
 
 const MIN_SLIDER_SIZE = 20; // pixels
@@ -108,6 +148,7 @@ export class Scrollable implements IScrollable {
         }
     }
 
+    // TODO: reset scroll position does not need to recalculate slider size
     public setScrollPosition(scrollPosition: number): void {
         if (this._scrollPosition !== scrollPosition) {
             this._scrollPosition = scrollPosition;
@@ -141,16 +182,20 @@ export class Scrollable implements IScrollable {
         return this._sliderPosition;
     }
 
+    public getSliderMaxPosition(): number {
+        return this._viewportSize - this._sliderSize;
+    }
+
+    public getSliderRatio(): number {
+        return this._sliderRatio;
+    }
+
     public required(): boolean {
         return this._required;
     }
 
 	// [methods]
 
-	/**
-	 * @description Generates our own defined scroll event.
-	 * @param event The raw {@link WheelEvent}.
-	 */
 	public createScrollEvent(event: WheelEvent): IScrollEvent {
 		return {
 			deltaX: event.deltaX,
@@ -161,21 +206,24 @@ export class Scrollable implements IScrollable {
 		};
 	}
 
+    public getScrollPositionFromDelta(delta: number): number {
+        return Math.round((this._sliderPosition + delta) / this._sliderRatio);
+    }
+
     // [private methods]
 
     /**
-     * Everytime when the {@link Scrollable} changes its fields, this method 
-     * will be invoked to recalculate all the numerated data to display the 
-     * correct scrollbar and its slider.
+     * @description Everytime when the {@link Scrollable} changes its fields, 
+	 * this method will be invoked to recalculate all the numerated data to 
+	 * display the correct scrollbar and its slider.
      */
     private __reCalculate(): void {
 
-        this._required = this._scrollSize > 0 && this._scrollSize > this._viewportSize;
-        
         /**
          * does not need a scrollbar since the current viewport has enough space 
          * to displays all the contents.
          */
+        this._required = this._scrollSize > 0 && this._scrollSize > this._viewportSize;
         if (!this._required) {
             return;
         }
@@ -194,6 +242,8 @@ export class Scrollable implements IScrollable {
          * the scroll can move from `0` to `this._scrollSize - this._viewportSize`
          * we calculate the ratio which represents how fast the scroll goes, 
          * how fast the slider goes.
+         * 
+         * note that the ratio is always less than 1.
          */
         this._sliderRatio = (
             (this._viewportSize - this._sliderSize) / 
@@ -203,7 +253,7 @@ export class Scrollable implements IScrollable {
         /**
          * recalculates the position of the slider.
          */
-		 this._sliderPosition = Math.round(this._scrollPosition * this._sliderRatio);
+        this._sliderPosition = Math.round(this._scrollPosition * this._sliderRatio);
     }
 
 }

@@ -25,8 +25,8 @@ scrollableElement.appendChild(scrollbarElement);
 
 const creationOpts: IScrollableWidgetCreationOpts = {
     viewportSize: DOMSize.getContentHeight(scrollableElement),
-    scrollSize: DOMSize.getContentHeight(scrollableElement) * 2,
-    scrollPosition: 0
+    scrollSize: DOMSize.getContentHeight(scrollableElement) * 10,
+    scrollPosition: 0,
 };
 
 const extensionOpts: IScrollableWidgetExtensionOpts = {
