@@ -21,7 +21,7 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "@types/mocha": "^9.0.0",
+    "@types/mocha": "^9.1.0",
     "acorn": "^8.7.0",
     "electron": "^13.1.7",
     "jsdom": "19.0.0",
