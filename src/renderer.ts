@@ -25,12 +25,12 @@ scrollableElement.appendChild(scrollbarElement);
 
 const creationOpts: IScrollableWidgetCreationOpts = {
     viewportSize: DOMSize.getContentHeight(scrollableElement),
-    scrollSize: DOMSize.getContentHeight(scrollableElement) * 2,
+    scrollSize: DOMSize.getContentHeight(scrollableElement) * 10,
     scrollPosition: 0,
 };
 
 const extensionOpts: IScrollableWidgetExtensionOpts = {
-    
+    mouseWheelScrollSensibility: 0.5
 };
 
 const smoothScrollableWidget = new TestSmoothScrollableWidget(creationOpts, extensionOpts);
