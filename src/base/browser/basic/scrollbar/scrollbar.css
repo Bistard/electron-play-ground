@@ -3,14 +3,24 @@
     position: absolute;
 }
 
+.scroll-bar.visible {
+	opacity: 1;
+	transition: opacity 100ms linear;
+}
+
+.scroll-bar.invisible {
+	opacity: 0;
+	pointer-events: none;
+}
+
+.scroll-bar.invisible.fade {
+	transition: opacity 600ms linear;
+}
+
 .scroll-bar > .scroll-slider {
     position: absolute;
     background-color: #b8b8b8;
     overflow: hidden;
-}
-
-.scroll-bar > .scroll-slider:hover {
-    opacity: 0.70;
 }
 
 .scroll-bar.horizontal {
@@ -22,6 +32,10 @@
     height: 100%;
 }
 
+.scroll-slider.active {
+    opacity: 0.70;
+}
+
 .scroll-bar.vertical {
     height: 100%;
     right: 0px;
@@ -29,18 +43,4 @@
 
 .scroll-bar.vertical > .scroll-slider {
     width: 100%;
-}
-
-.scrollable-element > .visible {
-	opacity: 1;
-	transition: opacity 100ms linear;
-}
-
-.scrollable-element > .invisible {
-	opacity: 0;
-	pointer-events: none;
-}
-
-.scrollable-element > .invisible.fade {
-	transition: opacity 600ms linear;
 }
