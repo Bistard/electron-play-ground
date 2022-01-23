@@ -1,6 +1,8 @@
 
 @import "./base/browser/basic/sash/sash.css";
 @import "./base/browser/basic/scrollbar/scrollbar.css";
+@import "./base/browser/secondary/list/listView.css";
+@import "./base/browser/secondary/scrollableWidget/scrollableWidget.css";
 
 body {
     margin: 0px;
@@ -17,6 +19,6 @@ body {
     width: 300px;
     height: 100%;
 
-    background-color: azure;
+    background-color: cadetblue;
     overflow: hidden;
 }
