@@ -1,7 +1,7 @@
 
 @import "./base/browser/basic/sash/sash.css";
 @import "./base/browser/basic/scrollbar/scrollbar.css";
-@import "./base/browser/secondary/list/listView.css";
+@import "./base/browser/secondary/listView/listView.css";
 @import "./base/browser/secondary/scrollableWidget/scrollableWidget.css";
 
 body {
