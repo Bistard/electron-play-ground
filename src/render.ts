@@ -1,7 +1,7 @@
 import { ListView } from "src/base/browser/secondary/listView/listView";
 import { IScrollableWidgetCreationOpts, IScrollableWidgetExtensionOpts } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
 import { DOMSize } from "src/base/common/dom";
-import { groupIntersect, IRange, IRangedGroup, Range, RangeMap } from "src/base/common/range";
+import { IRange } from "src/base/common/range";
 
 // [basic]
 
@@ -24,7 +24,9 @@ const extensionOpts: IScrollableWidgetExtensionOpts = {
     mouseWheelScrollSensibility: 0.5
 };
 
-const listView = new ListView(scrollableElement, true);
+const listView = new ListView(scrollableElement, {
+    transformOptimization: true
+});
 
 /**
  * 
@@ -35,20 +37,20 @@ const r2: IRange = {start: 50, end: 150};
 const r3: IRange = {start: 0, end: 50};
 const r4: IRange = {start: 50, end: 200};
 
-const rg1: IRangedGroup = {
-    range: r1,
-    size: 10
-};
+// const rg1: IRangedGroup = {
+//     range: r1,
+//     size: 10
+// };
 
-const rg2: IRangedGroup = {
-    range: r2,
-    size: 5
-};
+// const rg2: IRangedGroup = {
+//     range: r2,
+//     size: 5
+// };
 
-const rg3: IRangedGroup = {
-    range: r3,
-    size: 20
-};
+// const rg3: IRangedGroup = {
+//     range: r3,
+//     size: 20
+// };
 
 /**
  * @function Range.intersect()
