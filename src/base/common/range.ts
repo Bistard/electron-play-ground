@@ -53,7 +53,8 @@ export namespace Range {
 	 * elements in `B` that are not in `A`.
 	 * @param A The range A.
 	 * @param B The range B.
-	 * @returns An array of size 2, the first part is the elements .
+	 * @returns An array of size 2, the first part is the smaller elements not 
+	 * in A, the second part is the larger elements not in A.
 	 */
 	export function relativeComplement(A: IRange, B: IRange): [IRange, IRange] {
 		const complement: IRange[] = [];
@@ -173,7 +174,7 @@ export namespace Range {
  * @note If all the items shares the same size, {@link RangeTable} is no needed.
  * A {@link IRangeList} will do.
  */
-export class RangeTable<T extends IMeasureable> implements ISpliceable<T> {
+export class RangeTable {
 
 	private _list: IRangeList[];
 	private _size: number;
@@ -211,7 +212,7 @@ export class RangeTable<T extends IMeasureable> implements ISpliceable<T> {
      * @param items Elements to insert into the {@link RangeTable} in place of 
 	 * the deleted items.
      */
-	public splice(index: number, deleteCount: number, items: T[] = []): void {
+	public splice<T extends IMeasureable>(index: number, deleteCount: number, items: T[] = []): void {
 
 		// selects all the items before the splice.
 		const before: IRangeList[] = Range.listIntersection({start: 0, end: index}, this._list);
