@@ -2,7 +2,6 @@ import { IListViewRow, ListViewCache } from "src/base/browser/secondary/listView
 import { IListViewRenderer, ListViewRendererType } from "src/base/browser/secondary/listView/listRenderer";
 import { ScrollableWidget } from "src/base/browser/secondary/scrollableWidget/scrollableWidget";
 import { ScrollbarType } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
-import { requestAnimationFrame } from "src/base/common/animation";
 import { DisposableManager, IDisposable } from "src/base/common/dispose";
 import { DOMSize } from "src/base/common/dom";
 import { Emitter, Register } from "src/base/common/event";
@@ -71,8 +70,6 @@ export class ListView<T extends IMeasureable> implements IDisposable, ISpliceabl
     private prevRenderTop: number;
     private prevRenderHeight: number;
 
-    private scrollableWidgetNextAnimationFrameHandle: Number | null;
-    
     // [events]
 
     private _onDidChangeContentHeight = this.disposables.register(new Emitter<void>());
@@ -89,7 +86,6 @@ export class ListView<T extends IMeasureable> implements IDisposable, ISpliceabl
         this.element.className = 'list-view';
 
         this.items = [];
-        this.scrollableWidgetNextAnimationFrameHandle = null;
         this.rangeTable = new RangeTable();
         this.prevRenderTop = 0;
         this.prevRenderHeight = 0;
@@ -182,9 +178,6 @@ export class ListView<T extends IMeasureable> implements IDisposable, ISpliceabl
         this.listContainer.style.top = -renderTop + 'px';
         this.prevRenderTop = renderTop;
         this.prevRenderHeight = renderHeight;
-        
-        // this.__updateScrollHeight();
-        
     }
 
     /**
@@ -318,8 +311,6 @@ export class ListView<T extends IMeasureable> implements IDisposable, ISpliceabl
 
         const dom = item.row!.dom;
         dom.style.top = this.positionAt(index) + 'px';
-
-        dom.setAttribute('id', `${item.id}`);
         dom.setAttribute('index', `${index}`);
     }
 
@@ -433,6 +424,10 @@ export class ListView<T extends IMeasureable> implements IDisposable, ISpliceabl
 
     /**
      * @description Returns a range for rendering.
+     * 
+     * @note If render top and render height are not provided, returns a render 
+     * range under the current scrollable status.
+     * 
      * @returns A range for rendering.
      */
     private __getRenderRange(renderTop?: number, renderHeight?: number): IRange {
@@ -445,27 +440,12 @@ export class ListView<T extends IMeasureable> implements IDisposable, ISpliceabl
     }
 
     /**
-     * @description Invokes when scrolling happens.
+     * @description Invokes when scrolling happens, rerenders the whole view.
      * @param e The event {@link IScrollEvent}.
      */
     private __onDidScroll(e: IScrollEvent): void {
         const prevRenderRange = this.__getRenderRange(this.prevRenderTop, this.prevRenderHeight);
         this.render(prevRenderRange, e.scrollPosition, e.viewportSize);
-    }
-
-    /**
-     * @description 
-     */
-    private __updateScrollHeight(): void {
-        // const newHeight = this.rangeTable.size();
-        // this.listContainer.style.height = newHeight + 'px';
-
-        // if (this.scrollableWidgetNextAnimationFrameHandle === null) {
-        //     this.scrollableWidgetNextAnimationFrameHandle = requestAnimationFrame(() => {
-        //         this.scrollable.setScrollSize(newHeight);
-        //         this.scrollableWidgetNextAnimationFrameHandle = null;
-        //     });
-        // }
     }
 
 }
