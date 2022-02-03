@@ -46,7 +46,8 @@ export class ListViewCache<T> implements IDisposable {
         let row = cache.pop();
 
         if (row === undefined) {
-            const dom = document.createElement('list-view-item');
+            const dom = document.createElement('div');
+            dom.className = 'list-view-row';
             
             // const renderer = this.renderers.get(type);
             // if (renderer === undefined) {
