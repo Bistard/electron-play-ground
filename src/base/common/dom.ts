@@ -11,7 +11,8 @@ export enum EventType {
 	mousedown = 'mousedown',
 	mouseup = 'mouseup',
 	mousemove = 'mousemove',
-	doubleclick = 'dblclick'
+	doubleclick = 'dblclick',
+	wheel = 'wheel',
 }
 
 /**
