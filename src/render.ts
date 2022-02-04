@@ -26,6 +26,7 @@ const buildColors = function(start: number[], end: number[], count: number): num
     return colors;
 };
 
+const testItemType = 0;
 const nodeCount = 10;
 const colors = buildColors([255, 255, 0], [0, 255, 255], nodeCount);
 let testNodeIndex = 0;
@@ -35,6 +36,7 @@ export class TestNode {
     public index: number;
     public size: number;
     public color: string;
+    public type: any = testItemType;
     
     constructor(index: number, size?: number) {
         this.index = index;
@@ -46,7 +48,7 @@ export class TestNode {
 
 export class TestRenderer implements IListViewRenderer {
 
-    readonly type: ViewItemType = -1;
+    readonly type: ViewItemType = testItemType;
 
     constructor() { /* empty */ }
 
