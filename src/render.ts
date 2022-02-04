@@ -1,4 +1,4 @@
-import { IListViewRenderer, ListViewRendererType } from "src/base/browser/secondary/listView/listRenderer";
+import { IListViewRenderer } from "src/base/browser/secondary/listView/listRenderer";
 import { ListView, ViewItemType } from "src/base/browser/secondary/listView/listView";
 import { IScrollableWidgetExtensionOpts } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
 
@@ -46,20 +46,22 @@ export class TestNode {
 
 export class TestRenderer implements IListViewRenderer {
 
-    readonly type: ViewItemType = ListViewRendererType.TEST;
+    readonly type: ViewItemType = -1;
 
-    constructor() {
-
-    }
+    constructor() { /* empty */ }
 
     public render(element: HTMLElement, node: TestNode): void {
         element.style.height = node.size + 'px';
-        element.style.background = node.color;
 
-        const label = document.createElement('div');
-        label.className = 'test-node-label';
-        label.innerText = node.index.toString();
-        element.appendChild(label);
+        const numberElement = document.createElement('div');
+        numberElement.className = 'test-node-number';
+        
+        element.appendChild(numberElement);
+    }
+
+    public update(element: HTMLElement, index: number, node: TestNode): void {
+        element.style.background = node.color;
+        (element.firstChild as HTMLElement).innerHTML = index.toString();
     }
 
     public dispose(element: HTMLElement): void {

@@ -23,9 +23,19 @@ body {
     overflow: hidden;
 }
 
-.test-node-label {
+/* test purpose */
+
+.list-view-row {
+    border-bottom: 1px solid rgb(196, 196, 196);
+}
+
+.test-node-number {
     position: relative;
-    height: 100%;
-    width: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+
+    font-weight: bold;
+    font-size: 30px;
+    user-select: none;
     text-align: center;
 }
