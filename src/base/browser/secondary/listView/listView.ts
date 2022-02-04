@@ -445,7 +445,7 @@ export class ListView<T extends IMeasureable> implements IDisposable, ISpliceabl
      */
     private __onDidScroll(e: IScrollEvent): void {
         const prevRenderRange = this.__getRenderRange(this.prevRenderTop, this.prevRenderHeight);
-        this.render(prevRenderRange, e.scrollPosition, e.viewportSize);
+        this.render(prevRenderRange, this.scrollable.getScrollPosition(), this.scrollable.getViewportSize());
     }
 
 }
