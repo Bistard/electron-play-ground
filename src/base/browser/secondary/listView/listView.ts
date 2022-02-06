@@ -3,8 +3,8 @@ import { IListViewRenderer } from "src/base/browser/secondary/listView/listRende
 import { ScrollableWidget } from "src/base/browser/secondary/scrollableWidget/scrollableWidget";
 import { ScrollbarType } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
 import { DisposableManager, IDisposable } from "src/base/common/dispose";
-import { DOMSize } from "src/base/common/dom";
-import { Emitter, Register } from "src/base/common/event";
+import { DOMSize, EventType } from "src/base/common/dom";
+import { DomEmitter, Emitter, Register } from "src/base/common/event";
 import { ILabellable } from "src/base/common/label";
 import { IRange, ISpliceable, Range, RangeTable } from "src/base/common/range";
 import { IScrollEvent, Scrollable } from "src/base/common/scrollable";
@@ -34,7 +34,6 @@ export type ViewItemType = number;
  */
 interface IViewItem<T> {
     readonly id: number;
-    readonly type: ViewItemType;
     readonly data: T;
     size: number;
     row: IListViewRow | null; // null means this item is currently not rendered.
@@ -45,15 +44,21 @@ let ListViewItemUUID: number = 0;
 /**
  * The interface for {@link ListView}.
  */
-export interface IListView<T> {
+export interface IListView<T> extends IDisposable {
+
+    // [events / getter]
 
     onDidChangeContent: Register<void>;
-
     onDidScroll: Register<IScrollEvent>;
+    onClick: Register<MouseEvent>;
+    onDoubleclick: Register<MouseEvent>;
+    onMouseover: Register<MouseEvent>;
+    onMouseout: Register<MouseEvent>;
+    onMousedown: Register<MouseEvent>;
+    onMouseup: Register<MouseEvent>;
+    onMousemove: Register<MouseEvent>;
 
-    dispose(): void;
-
-    getScrollable(): Scrollable;
+    // [methods]
 
     /**
      * @description Renders all the items in the DOM tree.
@@ -98,6 +103,38 @@ export interface IListView<T> {
      */
     removeItemInDOM(index: number): void;
 
+    // [Scroll Related Methods]
+
+    /**
+     * @description Sets the viewport size of the list view.
+     * @param size The size of viewport.
+     */
+    setViewportSize(size: number): void;
+
+    /**
+     * @description Sets the scrollable position (top) of the list view.
+     * @param position 
+     */
+    setScrollPosition(position: number): void;
+
+    /**
+     * @description Returns the viewport size of the list view.
+     */
+    getViewportSize(): number;
+
+    /**
+     * @description Returns the scrollable position (top) of the list view.
+     */
+    getScrollPosition(): number;
+
+    // [Item Related Methods]
+
+    /**
+     * @description Returns the item at given index.
+     * @param index The index of the item.
+     */
+    getItem(index: number): T;
+
     /**
      * @description Returns the height of the item in DOM.
      * @param index The index of the item.
@@ -105,16 +142,45 @@ export interface IListView<T> {
     getItemHeight(index: number): number;
 
     /**
-     * @description Returns the item's DOM position (top) given the index.
+     * @description Returns the DOM's position of the item with the given index
+     * relatives to the viewport. If the item is not *entirely* visible in the 
+     * viewport, -1 will be returned.
+     * @param index The index of the item.
+     */
+    getItemRenderTop(index: number): number;
+
+    /**
+     * @description Returns the item's DOM position (top) given the index 
+     * relatives to the scrollable size.
      * @param index The index of the item.
      */
     positionAt(index: number): number;
 
     /**
      * @description Returns the item's index given the DOM position.
-     * @param position The DOM's position (top).
+     * @param position The DOM's position (top) relatives to the scrollable size.
      */
     indexAt(position: number): number;
+
+    /**
+     * @description Returns the item's index given the visible DOM position.
+     * @param visiblePosition The DOM's position (top) relatives to the viewport.
+     */
+    renderIndexAt(visiblePosition: number): number;
+
+    /**
+	 * @description Returns the index of the item which has an index after the 
+     * item with the given position.
+	 * @param position The DOM's position (top) relatives to the scrollable size.
+	 */
+    indexAfter(position: number): number;
+
+    /**
+     * @description Returns the index of the item which has an index after the
+     * item with the given visible DOM position.
+     * @param visiblePosition The DOM's position (top) relatives to the viewport.
+     */
+    renderIndexAfter(visiblePosition: number): number;
 }
 
 /**
@@ -127,7 +193,7 @@ export interface IListView<T> {
  * 
  * The performance mainly affects by how the renderers work.
  */
-export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implements IDisposable, ISpliceable<T> {
+export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implements IDisposable, ISpliceable<T>, IListView<T> {
 
     // [fields]
 
@@ -158,6 +224,14 @@ export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implem
 
     get onDidScroll(): Register<IScrollEvent> { return this.scrollableWidget.onDidScroll; }
     
+    get onClick(): Register<MouseEvent> { return this.disposables.register(new DomEmitter<MouseEvent>(this.listContainer, EventType.click)).registerListener; }
+    get onDoubleclick(): Register<MouseEvent> { return this.disposables.register(new DomEmitter<MouseEvent>(this.listContainer, EventType.doubleclick)).registerListener; }
+    get onMouseover(): Register<MouseEvent> { return this.disposables.register(new DomEmitter<MouseEvent>(this.listContainer, EventType.mouseover)).registerListener; }
+    get onMouseout(): Register<MouseEvent> { return this.disposables.register(new DomEmitter<MouseEvent>(this.listContainer, EventType.mouseout)).registerListener; }
+    get onMousedown(): Register<MouseEvent> { return this.disposables.register(new DomEmitter<MouseEvent>(this.listContainer, EventType.mousedown)).registerListener; }
+    get onMouseup(): Register<MouseEvent> { return this.disposables.register(new DomEmitter<MouseEvent>(this.listContainer, EventType.mouseup)).registerListener; }
+    get onMousemove(): Register<MouseEvent> { return this.disposables.register(new DomEmitter<MouseEvent>(this.listContainer, EventType.mousemove)).registerListener; }
+
     // [constructor]
 
     constructor(container: HTMLElement, renderers: IListViewRenderer[], opts: IListViewOpts) {
@@ -191,7 +265,7 @@ export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implem
         });
         this.scrollableWidget.render(this.element);
         this.scrollableWidget.onDidScroll((e: IScrollEvent) => {
-            this.__onDidScroll(e);
+            this.__onDidScroll();
         });
 
         this.renderers = new Map();
@@ -210,8 +284,6 @@ export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implem
     }
 
     // [methods]
-
-    public getScrollable(): Scrollable { return this.scrollable; }
 
     public dispose(): void {
         this.disposables.dispose();
@@ -269,14 +341,14 @@ export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implem
             const item = this.items[i]!;
 
             if (item.row) {
-                let rowCache = deleteCache.get(item.type);
+                let rowCache = deleteCache.get(item.data.type);
 
                 if (rowCache === undefined) {
                     rowCache = [];
-                    deleteCache.set(item.type,rowCache);
+                    deleteCache.set(item.data.type,rowCache);
                 }
 
-                const renderer = this.renderers.get(item.type);
+                const renderer = this.renderers.get(item.data.type);
                 if (renderer) {
                     renderer.dispose(item.row.dom);
                 }
@@ -350,7 +422,7 @@ export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implem
         for (const range of insertRanges) {
 			for (let i = range.start; i < range.end; i++) {
 				const item = this.items[i]!;
-				const rows = deleteCache.get(item.type);
+				const rows = deleteCache.get(item.data.type);
 				const row = rows?.pop();
 				this.insertItemInDOM(i, beforeElement, row);
 			}
@@ -383,15 +455,15 @@ export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implem
             if (row) {
                 item.row = row;
             } else {
-                item.row = this.cache.get(item.type, item.data);
+                item.row = this.cache.get(item.data.type, item.data);
             }
         }
 
         this.updateItemInDOM(index);
 
-        const renderer = this.renderers.get(item.type);
+        const renderer = this.renderers.get(item.data.type);
         if (renderer === undefined) {
-            throw new Error(`no renderer provided for the given type: ${item.type}`);
+            throw new Error(`no renderer provided for the given type: ${item.data.type}`);
         }
 
         renderer.update(item.row!.dom, index, item.data);
@@ -407,7 +479,7 @@ export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implem
         const item = this.items[index]!;
 
         if (item.row) {
-            const renderer = this.renderers.get(item.type);
+            const renderer = this.renderers.get(item.data.type);
 
             if (renderer) {
                 renderer.dispose(item.row.dom);
@@ -418,10 +490,47 @@ export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implem
         }
     }
 
-    // [Item Related Methods]
+    public setViewportSize(size: number): void {
+        this.scrollable.setViewportSize(size);
+    }
 
+    public setScrollPosition(position: number): void {
+        this.scrollable.setScrollPosition(position);
+    }
+
+    public getViewportSize(): number {
+        return this.scrollable.getViewportSize();
+    }
+
+    public getScrollPosition(): number {
+        return this.scrollable.getScrollPosition();
+    }
+
+    public getItem(index: number): T {
+        if (index < 0 || index >= this.items.length) {
+            throw new Error('index is invalid');
+        }
+        return this.items[index]!.data;
+    }
+    
     public getItemHeight(index: number): number {
-        return this.items[index]!.size;
+        const item = this.getItem(index);
+        return item.size;
+    }
+
+    public getItemRenderTop(index: number): number {
+        const itemTop = this.positionAt(index);
+        const itemHeight = this.getItemHeight(index);
+        
+        const scrollTop = this.scrollable.getScrollPosition();
+        const maxScrollTop = this.scrollable.getScrollSize() - this.scrollable.getViewportSize();
+
+        if (itemTop < scrollTop || itemTop + itemHeight > maxScrollTop) {
+            return -1;
+        }
+
+        const rest = itemTop - scrollTop;
+        return rest;
     }
 
     public positionAt(index: number): number {
@@ -430,6 +539,18 @@ export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implem
 
     public indexAt(position: number): number {
         return this.rangeTable.indexAt(position);
+    }
+
+    public renderIndexAt(visiblePosition: number): number {
+        return this.rangeTable.indexAt(this.prevRenderTop + visiblePosition);
+    }
+
+    public indexAfter(position: number): number {
+        return this.rangeTable.indexAfter(position);
+    }
+
+    public renderIndexAfter(visiblePosition: number): number {
+        return this.rangeTable.indexAfter(this.prevRenderTop + visiblePosition);
     }
 
     // [private helper methods]
@@ -479,9 +600,8 @@ export class ListView<T extends IMeasureable & ILabellable<ViewItemType>> implem
 
     /**
      * @description Invokes when scrolling happens, rerenders the whole view.
-     * @param e The event {@link IScrollEvent}.
      */
-    private __onDidScroll(e: IScrollEvent): void {
+    private __onDidScroll(): void {
         const prevRenderRange = this.__getRenderRange(this.prevRenderTop, this.prevRenderHeight);
         this.render(prevRenderRange, this.scrollable.getScrollPosition(), this.scrollable.getViewportSize());
     }

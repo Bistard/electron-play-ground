@@ -27,7 +27,7 @@ const buildColors = function(start: number[], end: number[], count: number): num
 };
 
 const testItemType = 0;
-const nodeCount = 10;
+const nodeCount = 20;
 const colors = buildColors([255, 255, 0], [0, 255, 255], nodeCount);
 let testNodeIndex = 0;
 
@@ -73,9 +73,9 @@ export class TestRenderer implements IListViewRenderer {
 
 // [basic]
 
-const scrollableElement = document.createElement('div');
-scrollableElement.className = 'container';
-document.body.appendChild(scrollableElement);
+const container = document.createElement('div');
+container.className = 'container';
+document.body.appendChild(container);
 
 // [end]
 
@@ -84,7 +84,7 @@ const extensionOpts: IScrollableWidgetExtensionOpts = {
 };
 
 const listView = new ListView<TestNode>(
-    scrollableElement, 
+    container, 
     [new TestRenderer()], 
     {
         transformOptimization: true,
@@ -98,3 +98,10 @@ for (let i = 0; i < nodeCount; i++) {
 }
 
 listView.splice(0, 0, items);
+
+listView.onClick((e) => {
+    const index = listView.renderIndexAt(e.clientY);
+    const item = listView.getItem(index);
+    console.log(item);
+    console.log(listView.getItemRenderTop(index));
+});
