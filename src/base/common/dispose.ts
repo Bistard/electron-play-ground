@@ -16,7 +16,7 @@ export interface IDisposable {
  * collection will do the rest of the jobs for us.
  * 
  * @note When overriding this.dispose() method, remember to to call super.dispose() 
- * at some time.
+ * at somewhere.
  */
 export class Disposable implements IDisposable {
 

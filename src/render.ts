@@ -1,6 +1,8 @@
 import { IListViewRenderer } from "src/base/browser/secondary/listView/listRenderer";
 import { ListView, ViewItemType } from "src/base/browser/secondary/listView/listView";
+import { IListMouseEvent, ListWidget } from "src/base/browser/secondary/listWidget/listWidget";
 import { IScrollableWidgetExtensionOpts } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
+import { IDisposable } from "src/base/common/dispose";
 
 // [test]
 
@@ -83,7 +85,9 @@ const extensionOpts: IScrollableWidgetExtensionOpts = {
     mouseWheelScrollSensibility: 0.5
 };
 
-const listView = new ListView<TestNode>(
+// [ListWidget Test Code Block]
+
+const listWidget = new ListWidget<TestNode>(
     container, 
     [new TestRenderer()], 
     {
@@ -97,11 +101,35 @@ for (let i = 0; i < nodeCount; i++) {
     items.push(new TestNode(i));
 }
 
-listView.splice(0, 0, items);
+listWidget.splice(0, 0, items);
 
-listView.onClick((e) => {
-    const index = listView.renderIndexAt(e.clientY);
-    const item = listView.getItem(index);
-    console.log(item);
-    console.log(listView.getItemRenderTop(index));
+listWidget.onClick((event: IListMouseEvent<TestNode>): void => {
+    console.log(event);
 });
+
+// [ListView Test Code Block]
+
+// const listView = new ListView<TestNode>(
+//     container, 
+//     [new TestRenderer()], 
+//     {
+//         transformOptimization: true,
+//         mouseWheelScrollSensitivity: 0.5
+//     }
+// );
+
+// const items: TestNode[] = [];
+// for (let i = 0; i < nodeCount; i++) {
+//     items.push(new TestNode(i));
+// }
+
+// listView.splice(0, 0, items);
+
+// listView.onClick((e) => {
+//     const index = listView.renderIndexAt(e.clientY);
+//     const item = listView.getItem(index);
+//     console.log(item);
+//     console.log(listView.getItemRenderTop(index));
+// });
+
+// [End]
