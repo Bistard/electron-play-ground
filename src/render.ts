@@ -117,22 +117,13 @@ listWidget.onClick((event: IListMouseEvent<TestNode>): void => {
     }
 });
 
-listWidget.onMousedown(event => {
-    let upDisposables: IDisposable;
-    let moveDisposables: IDisposable;
-    
-    console.log('drag starts');
-
-    moveDisposables = listWidget.onMousemove(event => {
-        console.log('drag moving');
-    });
-
-    upDisposables = addDisposableListener(window, EventType.mouseup, event => {
-        console.log('drag drops');
-        moveDisposables.dispose();
-        upDisposables.dispose();
-    });
-})
+listWidget.onDidChangeFocus(res => {
+    if (res) {
+        console.log('focus');
+    } else {
+        console.log('blur');
+    }
+});
 
 // [ListView Test Code Block]
 
