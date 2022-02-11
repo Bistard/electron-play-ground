@@ -1,8 +1,11 @@
 import { IListViewRenderer } from "src/base/browser/secondary/listView/listRenderer";
-import { ListView, ViewItemType } from "src/base/browser/secondary/listView/listView";
+import { ViewItemType } from "src/base/browser/secondary/listView/listView";
 import { IListMouseEvent, ListWidget } from "src/base/browser/secondary/listWidget/listWidget";
 import { IScrollableWidgetExtensionOpts } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
 import { IDisposable } from "src/base/common/dispose";
+import { addDisposableListener, EventType } from "src/base/common/dom";
+import { keyboardService } from "src/code/browser/service/keyboardService";
+import { ShortcutService } from "src/code/browser/service/shortcutService";
 
 // [test]
 
@@ -60,7 +63,7 @@ export class TestRenderer implements IListViewRenderer {
         const numberElement = document.createElement('div');
         numberElement.className = 'test-node-number';
         
-        element.appendChild(numberElement);
+        element.appendChild(numberElement);     
     }
 
     public update(element: HTMLElement, index: number, node: TestNode): void {
@@ -78,6 +81,8 @@ export class TestRenderer implements IListViewRenderer {
 const container = document.createElement('div');
 container.className = 'container';
 document.body.appendChild(container);
+
+const shortcutService = new ShortcutService(new keyboardService());
 
 // [end]
 
@@ -103,9 +108,31 @@ for (let i = 0; i < nodeCount; i++) {
 
 listWidget.splice(0, 0, items);
 
+// this is how to use focus and selections upport in ListWidget
 listWidget.onClick((event: IListMouseEvent<TestNode>): void => {
-    console.log(event);
+    if (event.browserEvent.ctrlKey) {
+        listWidget.toggleSelection(event.index);
+    } else {
+        listWidget.toggleFocus(event.index);
+    }
 });
+
+listWidget.onMousedown(event => {
+    let upDisposables: IDisposable;
+    let moveDisposables: IDisposable;
+    
+    console.log('drag starts');
+
+    moveDisposables = listWidget.onMousemove(event => {
+        console.log('drag moving');
+    });
+
+    upDisposables = addDisposableListener(window, EventType.mouseup, event => {
+        console.log('drag drops');
+        moveDisposables.dispose();
+        upDisposables.dispose();
+    });
+})
 
 // [ListView Test Code Block]
 
