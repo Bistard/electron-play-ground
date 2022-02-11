@@ -96,7 +96,7 @@ export class List<T> {
     }
 
     public empty(): boolean {
-        return !!this._size;
+        return this._size === 0;
     }
 
     public size(): number {
