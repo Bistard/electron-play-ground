@@ -97,7 +97,8 @@ const listWidget = new ListWidget<TestNode>(
     [new TestRenderer()], 
     {
         transformOptimization: true,
-        mouseWheelScrollSensitivity: 0.5
+        mouseWheelScrollSensitivity: 0.5,
+        dragAndDropSupport: true,
     }
 );
 
@@ -109,13 +110,13 @@ for (let i = 0; i < nodeCount; i++) {
 listWidget.splice(0, 0, items);
 
 // this is how to use focus and selections upport in ListWidget
-listWidget.onClick((event: IListMouseEvent<TestNode>): void => {
-    if (event.browserEvent.ctrlKey) {
-        listWidget.toggleSelection(event.index);
-    } else {
-        listWidget.toggleFocus(event.index);
-    }
-});
+// listWidget.onClick((event: IListMouseEvent<TestNode>): void => {
+//     if (event.browserEvent.ctrlKey) {
+//         listWidget.toggleSelection(event.index);
+//     } else {
+//         listWidget.toggleFocus(event.index);
+//     }
+// });
 
 listWidget.onDidChangeFocus(res => {
     if (res) {
