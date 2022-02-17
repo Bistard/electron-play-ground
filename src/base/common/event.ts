@@ -68,6 +68,7 @@ export const EVENT_EMITTER = new EventEmitter();
  *  - {@link PauseableEmitter}
  *  - {@link DelayableEmitter}
  *  - {@link SignalEmitter}
+ *  - {@link AsyncEmitter}
  * 
  *  - {@namespace Event}
  ******************************************************************************/
@@ -76,7 +77,9 @@ export const EVENT_EMITTER = new EventEmitter();
  * @readonly A listener is a callback function that once the callback is invoked,
  * the required event type will be returned as a parameter.
  */
-export type Listener<E> = (e: E) => any;
+export type Listener<E> = (e: E) => void;
+
+export type AsyncListener<E> = (e: E) => Promise<void>;
 
 /**
  * @readonly A register is essentially a function that registers a listener to 
@@ -90,6 +93,43 @@ export interface Register<T> {
 	(listener: Listener<T>, disposables?: IDisposable[]): IDisposable;
 }
 
+export interface AsyncRegister<T> {
+    (listener: AsyncListener<T>, disposables?: IDisposable[]): IDisposable;
+}
+
+export interface IEmitter<T> {
+
+    /**
+     * @description For the purpose of registering new listener.
+     * 
+     * @warn If the emitter is already disposed, an error will throw.
+     * @returns A register (a function) that requires a listener (callback) to 
+     * be registered.
+     */
+    registerListener: Register<T>;
+    
+    /**
+     * @description Fires the event T and notifies all the registered listeners.
+     * 
+     * @note fire() guarantees all the registered listeners (callback) will be 
+     * invoked / notified. Any errors will be stored and returned as an array.
+     * 
+     * @param event The event T to be notified to all listeners.
+     * @returns An array of errors.
+     */
+    fire(event: T): any[];
+    
+    /**
+     * @description Disposes the whole event emitter. All the registered 
+     * listeners will be cleaned. 
+     * 
+     * @warn Registering a listener after dispose() is invoked will throw an 
+     * error.
+     */
+    dispose(): void;
+
+}
+
 /**
  * @readonly An event emitter binds to a specific event T. All the listeners who 
  * is listening to the event T will be notified once the event occurs.
@@ -100,21 +140,14 @@ export interface Register<T> {
  * To trigger the event occurs and notifies all the listeners, use this.fire(event) 
  * where `event` is the type T.
  */
-export class Emitter<T> implements IDisposable {
+export class Emitter<T> implements IDisposable, IEmitter<T> {
     
     private _disposed: boolean = false;
-    private _listeners: List<Listener<T>> = new List();
+    protected _listeners: List<Listener<T>> = new List();
 
     /** @readonly Using function closures here. */
     private _register?: Register<T>;
 	
-    /**
-     * @description For the purpose of registering new listener.
-     * 
-     * @warn If the emitter is already disposed, an error will throw.
-     * @returns A register (a function) that requires a listener (callback) to 
-     * be registered.
-     */
     get registerListener(): Register<T> {
         
         // cannot register to a disposed emitter
@@ -148,15 +181,6 @@ export class Emitter<T> implements IDisposable {
 		return this._register;
     }
 
-    /**
-     * @description Fires the event T and notifies all the registered listeners.
-     * 
-     * @note fire() guarantees all the registered listeners (callback) will be 
-     * invoked / notified. Any errors will be stored and returned as an array.
-     * 
-     * @param event The event T to be notified to all listeners.
-     * @returns An array of errors.
-     */
     public fire(event: T): any[] {
 		
         const errors: any[] = [];
@@ -172,13 +196,6 @@ export class Emitter<T> implements IDisposable {
         return errors;
 	}
 
-    /**
-     * @description Disposes the whole event emitter. All the registered 
-     * listeners will be cleaned. 
-     * 
-     * @warn Registering a listener after dispose() is invoked will throw an 
-     * error.
-     */
     public dispose(): void {
 		if (!this._disposed) {
 			this._disposed = true;
@@ -213,15 +230,18 @@ export class DomEmitter<T> implements IDisposable {
 }
 
 /**
- * @description An {@link Emitter} that is pauseable and resumable. Note that 
+ * @class An {@link Emitter} that is pauseable and resumable. Note that 
  * when the emitter is paused, the event will not be saved.
+ * 
+ * @note Default is NOT paused.
  */
 export class PauseableEmitter<T> extends Emitter<T> {
 
-    private _paused: boolean = false;
+    private _paused: boolean;
 
-    constructor() {
+    constructor(activate: boolean = true) {
         super();
+        this._paused = !activate;
     }
 
     public pause(): void {
@@ -243,7 +263,7 @@ export class PauseableEmitter<T> extends Emitter<T> {
 }
 
 /**
- * @description An {@link Emitter} that works the same as {@link PauseableEmitter},
+ * @class An {@link Emitter} that works the same as {@link PauseableEmitter},
  * except that when the emitter is paused, the fired event will be saved. When
  * the emitter is resumed, the saved events will be fired.
  * 
@@ -300,7 +320,7 @@ export class DelayableEmitter<T> extends Emitter<T> {
 }
 
 /**
- * @description A {@link SignalEmitter} consumes a series of {@link Register} and
+ * @class A {@link SignalEmitter} consumes a series of {@link Register} and
  * fires a new type of event under a provided logic processing.
  * 
  * The {@link SignalEmitter} consumes a series of event with type T, and fires the
@@ -325,6 +345,31 @@ export class SignalEmitter<T, E> extends Emitter<E> {
     public override dispose(): void {
         super.dispose();
         this.disposables.dispose();
+    }
+
+}
+
+/**
+ * @class Same as {@link Emitter<T>} with extra method `fireAsync()`.
+ */
+export class AsyncEmitter<T> extends Emitter<T> {
+
+    constructor() {
+        super();
+    }
+
+    public async fireAsync(event: T): Promise<any[]> {
+        const errors: any[] = [];
+
+        for (const listener of this._listeners as List<AsyncListener<T>>) {
+            try {
+                await listener(event);
+            } catch (e) {
+                errors.push(e);
+            }
+        }
+
+        return errors;
     }
 
 }
