@@ -3,24 +3,30 @@
 @import "./base/browser/basic/scrollbar/scrollbar.css";
 @import "./base/browser/secondary/listView/listView.css";
 @import "./base/browser/secondary/scrollableWidget/scrollableWidget.css";
+@import "./base/browser/secondary/splitView/splitView.css";
 
 body {
     margin: 0px;
     padding: 0px;
+    border: 0px;
     font-size: 10pt;
     background-color: white;
     font-family: 'Microsoft Yahei', '微软雅黑', 'Open Sans', 'Helvetica Neue', 'Helvetica', 'Arial', '나눔바른고딕', 'Nanum Barun Gothic', '맑은고딕', 'Malgun Gothic', sans-serif;
 }
 
 
-.container {
+.container, .list-widget-container, .editor-container {
     position: absolute;
 
-    width: 300px;
     height: 100%;
+    width: 100%;
 
     background-color: rgb(255, 255, 255);
     overflow: hidden;
+}
+
+.editor-container {
+    background-color: burlywood;
 }
 
 /* test purpose */

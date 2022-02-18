@@ -2,8 +2,10 @@ import { IListViewRenderer } from "src/base/browser/secondary/listView/listRende
 import { ViewItemType } from "src/base/browser/secondary/listView/listView";
 import { IListMouseEvent, ListWidget } from "src/base/browser/secondary/listWidget/listWidget";
 import { IScrollableWidgetExtensionOpts } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
+import { SplitView } from "src/base/browser/secondary/splitView/splitView";
 import { IDisposable } from "src/base/common/dispose";
 import { addDisposableListener, EventType } from "src/base/common/dom";
+import { Priority } from "src/base/common/event";
 import { keyboardService } from "src/code/browser/service/keyboardService";
 import { ShortcutService } from "src/code/browser/service/shortcutService";
 
@@ -78,11 +80,30 @@ export class TestRenderer implements IListViewRenderer {
 
 // [basic]
 
-const container = document.createElement('div');
-container.className = 'container';
-document.body.appendChild(container);
+const documentContainer = document.createElement('div');
+documentContainer.className = 'container';
+document.body.appendChild(documentContainer);
 
-const shortcutService = new ShortcutService(new keyboardService());
+const listWidgetContainer = document.createElement('div');
+listWidgetContainer.className = 'list-widget-container';
+
+const editorContainer = document.createElement('div');
+editorContainer.className = 'editor-container';
+
+const splitView = new SplitView(documentContainer, [{
+        element: listWidgetContainer,
+        minimumSize: 300,
+        maximumSize: 400,
+        initSize: 300,
+        priority: Priority.Low
+    }, {
+        element: editorContainer,
+        minimumSize: 0,
+        maximumSize: Number.POSITIVE_INFINITY,
+        initSize: 0,
+        priority: Priority.High
+    }]
+);
 
 // [end]
 
@@ -93,7 +114,7 @@ const extensionOpts: IScrollableWidgetExtensionOpts = {
 // [ListWidget Test Code Block]
 
 const listWidget = new ListWidget<TestNode>(
-    container, 
+    listWidgetContainer, 
     [new TestRenderer()], 
     {
         transformOptimization: true,
@@ -129,7 +150,7 @@ listWidget.onDidChangeFocus(res => {
 // [ListView Test Code Block]
 
 // const listView = new ListView<TestNode>(
-//     container, 
+//     listWidgetContainer, 
 //     [new TestRenderer()], 
 //     {
 //         transformOptimization: true,
