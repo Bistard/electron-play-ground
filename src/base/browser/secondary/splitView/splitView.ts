@@ -132,7 +132,7 @@ export class SplitView implements ISplitView {
         if (this.viewItems.length > 1) {
             const sash = new Sash(this.sashContainer, {
                 orientation: Orientation.Vertical,
-                defaultPosition: 0,
+                defaultPosition:400,
             });
             sash.create();
 
@@ -141,7 +141,7 @@ export class SplitView implements ISplitView {
 
         // rendering process
 
-        if (this.viewItems.length === opt.index!) {
+        if (this.viewItems.length === 0 || this.viewItems.length === opt.index) {
             this.viewContainer.appendChild(newView);
         } else {
             this.viewContainer.insertBefore(newView, this.viewContainer.children.item(opt.index!));
@@ -267,6 +267,21 @@ export class SplitView implements ISplitView {
         }
 
         // Sash rendering
+    }
+
+    private __getSashPosition(sash: Sash): number {
+        let position = 0;
+
+        for (let i = 0; i < this.viewItems.length; i++) {
+            
+            if (this.sashItems[i]! === sash) {
+                return position;
+            }
+
+            position += this.viewItems[i]!.size;
+        }
+
+        throw new Error(`sash not found in split-view: ${sash}`);
     }
 
 }

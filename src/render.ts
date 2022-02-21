@@ -1,13 +1,9 @@
 import { IListViewRenderer } from "src/base/browser/secondary/listView/listRenderer";
 import { ViewItemType } from "src/base/browser/secondary/listView/listView";
-import { IListMouseEvent, ListWidget } from "src/base/browser/secondary/listWidget/listWidget";
+import { ListWidget } from "src/base/browser/secondary/listWidget/listWidget";
 import { IScrollableWidgetExtensionOpts } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
 import { SplitView } from "src/base/browser/secondary/splitView/splitView";
-import { IDisposable } from "src/base/common/dispose";
-import { addDisposableListener, EventType } from "src/base/common/dom";
 import { Priority } from "src/base/common/event";
-import { keyboardService } from "src/code/browser/service/keyboardService";
-import { ShortcutService } from "src/code/browser/service/shortcutService";
 
 // [test]
 

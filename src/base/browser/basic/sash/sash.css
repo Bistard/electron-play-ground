@@ -1,12 +1,30 @@
+:root {
+	--sash-size: 4px;
+}
+
 .sash {
-    position: absolute;
-
-    left: 100px;
-
-    width: 4px;
+    position: relative;
+    background-color: none;
     height: 100%;
 
-    cursor: w-resize;
-
     background-color: aquamarine;
+
+    /* touch-action: none; */
+    pointer-events: initial;
+}
+
+.sash-vertical {
+    cursor: ew-resize;
+	width: var(--sash-size);
+	height: 100%;
+}
+
+.sash-horizontal {
+    cursor: ns-resize;
+	width: 100%;
+	height: var(--sash-size);
+}
+
+.sash:hover {
+    background-color: #c5ffec;
 }

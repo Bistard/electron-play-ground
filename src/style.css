@@ -31,9 +31,6 @@ body {
 
 /* test purpose */
 
-.list-view-row {
-    /* border-bottom: 1px solid rgb(196, 196, 196); */
-}
 
 .list-view-row:hover {
     opacity: 70%;
