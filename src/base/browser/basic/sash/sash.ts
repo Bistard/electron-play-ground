@@ -164,13 +164,10 @@ export class Sash extends Disposable implements ICreateable, ISash {
         if (this.element === undefined) {
             return;
         }
-        this.element.addEventListener('click', () => {
-            console.log('sash clicked.');
-        });
+
         this.__register(addDisposableListener(this.element, EventType.mousedown, 
             // using anonymous callback to avoid `this` argument ambiguous.
-            (e: MouseEvent) => { 
-                console.log('mouse down');
+            (e: MouseEvent) => {
                 // start dragging
                 this._initDrag(e);
                 
@@ -186,7 +183,6 @@ export class Sash extends Disposable implements ICreateable, ISash {
 
         this.__register(addDisposableListener(this.element, EventType.doubleclick,
             () => {
-                console.log('double click');
                 // reset position
                 if (this.orientation === Orientation.Vertical) {
                     this.element!.style.left = this.defaultPosition + 'px';
@@ -222,10 +218,9 @@ export class Sash extends Disposable implements ICreateable, ISash {
          *  2. So that `this` argument is referring to the {@link Sash} object 
          *     instead of the actual HTMLElement.
          */
-        
+
         let doDragHelper: (e: MouseEvent) => void;
         let stopDragHelper = () => {
-            console.log('mouse up');
             document.documentElement.removeEventListener(EventType.mousemove, doDragHelper, false);
             document.documentElement.removeEventListener(EventType.mouseup, stopDragHelper, false);
             this._onDidEnd.fire();
@@ -235,13 +230,10 @@ export class Sash extends Disposable implements ICreateable, ISash {
         if (this.orientation === Orientation.Vertical) {
 
             doDragHelper = (e: MouseEvent) => {
-                console.log('mouse move');
 
                 if (this.range && (e.clientX < this.range.start || (e.clientX > this.range.end && this.range.end !== -1))) {
                     return;
                 }
-
-                e.preventDefault();
                 
                 this.element!.style.left = (this.startDimention + e.pageX - this.startCoordinate) + 'px';
                 this._onDidMove.fire({ startX: event.pageX, startY: event.pageY, currentX: e.pageX, currentY: e.pageY });
@@ -254,12 +246,9 @@ export class Sash extends Disposable implements ICreateable, ISash {
         else {
 
             doDragHelper = (e: MouseEvent) => {
-                console.log('mouse move');
                 if (this.range && (e.clientY < this.range.start || (e.clientY > this.range.end && this.range.end !== -1))) {
                     return;
                 }
-
-                e.preventDefault();
 
                 this.element!.style.top = (this.startDimention + event.pageY - this.startCoordinate) + 'px';
                 this._onDidMove.fire({ startX: event.pageX, startY: event.pageY, currentX: e.pageX, currentY: e.pageY });

@@ -85,9 +85,6 @@ listWidgetContainer.className = 'list-widget-container';
 
 const editorContainer = document.createElement('div');
 editorContainer.className = 'editor-container';
-editorContainer.addEventListener('click', () => {
-    console.log('editor clicked.');
-});
 
 const splitView = new SplitView(documentContainer, [{
         element: listWidgetContainer,

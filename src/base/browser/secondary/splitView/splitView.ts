@@ -67,15 +67,9 @@ export class SplitView implements ISplitView {
 
         this.sashContainer = document.createElement('div');
         this.sashContainer.className = 'sash-container';
-        this.sashContainer.addEventListener('click', () => {
-            console.log('sash container clicked.');
-        });
 
         this.viewContainer = document.createElement('div');
         this.viewContainer.className = 'view-container';
-        this.viewContainer.addEventListener('click', () => {
-            console.log('view container clicked.');
-        });
 
         this.size = DomSize.getContentWidth(container);
 
@@ -141,6 +135,7 @@ export class SplitView implements ISplitView {
                 defaultPosition:400,
             });
             sash.create();
+            sash.registerListeners();
 
             this.sashItems.splice(opt.index!, 0, sash);
         }
