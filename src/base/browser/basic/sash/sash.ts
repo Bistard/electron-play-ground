@@ -164,7 +164,9 @@ export class Sash extends Disposable implements ICreateable, ISash {
         if (this.element === undefined) {
             return;
         }
-        
+        this.element.addEventListener('click', () => {
+            console.log('sash clicked.');
+        });
         this.__register(addDisposableListener(this.element, EventType.mousedown, 
             // using anonymous callback to avoid `this` argument ambiguous.
             (e: MouseEvent) => { 
@@ -220,7 +222,7 @@ export class Sash extends Disposable implements ICreateable, ISash {
          *  2. So that `this` argument is referring to the {@link Sash} object 
          *     instead of the actual HTMLElement.
          */
-
+        
         let doDragHelper: (e: MouseEvent) => void;
         let stopDragHelper = () => {
             console.log('mouse up');
