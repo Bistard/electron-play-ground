@@ -10,6 +10,7 @@
     background-color: aquamarine;
 
     pointer-events: initial;
+    user-select: none;
 }
 
 .sash-vertical {

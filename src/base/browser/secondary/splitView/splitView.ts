@@ -29,7 +29,8 @@ export interface IViewOpts {
     readonly initSize: number;
     
     /**
-     * When adding/removing view, the view with higher priority will be resized first.
+     * When adding/removing view, the view with higher priority will be resized 
+     * first.
      * Default is {@link Priority.Low}.
      */
     priority?: Priority;
@@ -125,19 +126,35 @@ export class SplitView implements ISplitView {
         newView.className = 'split-view-view';
         
         const view = new SplitViewItem(newView, opt);
-        this.viewItems.splice(opt.index!, 0, view);
+        this.viewItems.splice(opt.index, 0, view);
     
         // sash
 
         if (this.viewItems.length > 1) {
             const sash = new Sash(this.sashContainer, {
-                orientation: Orientation.Vertical,
-                defaultPosition:400,
+                orientation: Orientation.Vertical
             });
             sash.create();
             sash.registerListeners();
 
-            this.sashItems.splice(opt.index!, 0, sash);
+            sash.onDidMove(e => {
+                const [view1, view2] = this.__getAdjacentViews(sash);
+                view1.size += e.deltaX;
+                view2.size -= e.deltaX;
+                view1.render();
+                view2.render(this.__getViewOffset(view2) + e.deltaX);
+            });
+
+            sash.onDidReset(() => {
+                const [view1, view2] = this.__getAdjacentViews(sash);
+                console.log('split-view: unfinished part reached');
+                // view1.size = sash.defaultPosition;
+                // view2.size -= e.deltaX;
+                // view1.render();
+                // view2.render(this.__getViewOffset(view2) + e.deltaX);
+            });
+
+            this.sashItems.splice(opt.index, 0, sash);
         }
 
         // rendering process
@@ -261,30 +278,40 @@ export class SplitView implements ISplitView {
      * @description 
      */
     private __doRender(): void {
-        let offset: number = 0;
-        for (const view of this.viewItems) {
+        
+        let offset = 0;
+        for (let i = 0; i < this.viewItems.length; i++) {
+            const view = this.viewItems[i]!;
             view.render(offset);
-            offset += view.size;
-        }
 
-        // Sash rendering
+            offset += view.size;
+
+            if (i != this.viewItems.length - 1) {
+                const sash = this.sashItems[i]!;
+                sash.relayout(offset - sash.size / 2);
+            }
+        }
     }
 
-    private __getSashPosition(sash: Sash): number {
-        let position = 0;
+    private __getAdjacentViews(sash: Sash): [SplitViewItem, SplitViewItem] {
+        const before = this.sashItems.indexOf(sash);
+        return [this.viewItems[before]!, this.viewItems[before + 1]!];
+    }
+
+    private __getViewOffset(view: SplitViewItem): number {
+        let offset = 0;
 
         for (let i = 0; i < this.viewItems.length; i++) {
             
-            if (this.sashItems[i]! === sash) {
-                return position;
+            if (this.viewItems[i] === view) {
+                return offset;
             }
 
-            position += this.viewItems[i]!.size;
+            offset += this.viewItems[i]!.size;
         }
 
-        throw new Error(`sash not found in split-view: ${sash}`);
+        throw new Error(`view not found in split-view: ${view}`);
     }
-
 }
 
 export class SplitViewSpaceError extends Error {

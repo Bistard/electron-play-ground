@@ -28,9 +28,11 @@ export class SplitViewItem {
         
     }
 
-    public render(offset: number): void {
+    public render(offset?: number): void {
         this.container.style.width = `${this.size}px`;
-        this.container.style.left = `${offset}px`;
+        if (offset) {
+            this.container.style.left = `${offset}px`;
+        }
     }
 
     public flexible(): boolean {
