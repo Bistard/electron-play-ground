@@ -246,6 +246,7 @@ export class Sash extends Disposable implements ICreateable, ISash {
         // The start of dimension (width or height) of the sash when mouse-downed.
         let startDimention = 0;
         // The previous coordinate (x / y) when mouse-moved.
+        let firstDrag = true;
         let prevX = 0, prevY = 0;
 
         /**
@@ -272,6 +273,13 @@ export class Sash extends Disposable implements ICreateable, ISash {
                 }
                 
                 this.element!.style.left = (startDimention + e.pageX - startCoordinate) + 'px';
+                
+                if (firstDrag === true) {
+                    prevX = e.pageX;
+                    prevY = e.pageY;
+                    firstDrag = false;
+                }
+
                 this._onDidMove.fire({ startX: event.pageX, startY: event.pageY, currentX: e.pageX, currentY: e.pageY, deltaX: e.pageX - prevX, deltaY: e.pageY - prevY });
                 prevX = e.pageX;
                 prevY = e.pageY;
@@ -289,6 +297,13 @@ export class Sash extends Disposable implements ICreateable, ISash {
                 }
 
                 this.element!.style.top = (startDimention + event.pageY - startCoordinate) + 'px';
+                
+                if (firstDrag === true) {
+                    prevX = e.pageX;
+                    prevY = e.pageY;
+                    firstDrag = false;
+                }
+
                 this._onDidMove.fire({ startX: event.pageX, startY: event.pageY, currentX: e.pageX, currentY: e.pageY, deltaX: e.pageX - prevX, deltaY: e.pageY - prevY });
                 prevX = e.pageX;
                 prevY = e.pageY;

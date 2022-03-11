@@ -10,9 +10,12 @@ export class SplitViewItem {
 
     public resizePriority: Priority;
 
+    private disposed: boolean;
     private container: HTMLElement;
 
     constructor(container: HTMLElement, opt: IViewOpts) {
+        this.disposed = false;
+        
         container.appendChild(opt.element);
         
         this.container = container;
@@ -29,6 +32,10 @@ export class SplitViewItem {
     }
 
     public render(offset?: number): void {
+        if (this.disposed) {
+            return;
+        }
+
         this.container.style.width = `${this.size}px`;
         if (offset) {
             this.container.style.left = `${offset}px`;
@@ -45,6 +52,13 @@ export class SplitViewItem {
 
     public wideableSpace(): number {
         return this.maximumSize - this.size;
+    }
+
+    public dispose(): void {
+        if (this.disposed === false) {
+			this.container.remove();
+            this.disposed = true;
+		}
     }
 
 }

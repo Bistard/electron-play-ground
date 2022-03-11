@@ -86,6 +86,9 @@ listWidgetContainer.className = 'list-widget-container';
 const editorContainer = document.createElement('div');
 editorContainer.className = 'editor-container';
 
+const extraContainer = document.createElement('div');
+extraContainer.className = 'extra-container';
+
 const splitView = new SplitView(documentContainer, [{
         element: listWidgetContainer,
         minimumSize: 300,
@@ -94,6 +97,12 @@ const splitView = new SplitView(documentContainer, [{
         priority: Priority.Low
     }, {
         element: editorContainer,
+        minimumSize: 0,
+        maximumSize: Number.POSITIVE_INFINITY,
+        initSize: 600,
+        priority: Priority.Low
+    }, {
+        element: extraContainer,
         minimumSize: 0,
         maximumSize: Number.POSITIVE_INFINITY,
         initSize: 0,

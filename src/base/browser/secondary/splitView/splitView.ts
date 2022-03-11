@@ -90,6 +90,11 @@ export class SplitView implements ISplitView {
         container.appendChild(this.element);
     }
 
+    public dispose(): void {
+        this.viewItems.forEach(view => view.dispose());
+        this.sashItems.forEach(sash => sash.dispose());
+    }
+
     public addView(opt: IViewOpts): void {
         this.__doAddView(opt);
         this.__render();
@@ -101,11 +106,6 @@ export class SplitView implements ISplitView {
      */
     public onWindowResize(dimension: IDimension): void {
         // TODO
-    }
-
-
-    public dispose(): void {
-        
     }
 
     // [private helper methods]
@@ -146,6 +146,7 @@ export class SplitView implements ISplitView {
             });
 
             sash.onDidReset(() => {
+                // TODO
                 const [view1, view2] = this.__getAdjacentViews(sash);
                 console.log('split-view: unfinished part reached');
                 // view1.size = sash.defaultPosition;
@@ -293,11 +294,18 @@ export class SplitView implements ISplitView {
         }
     }
 
+    /**
+     * @description Returns the adjacent split views given the {@link Sash}.
+     */
     private __getAdjacentViews(sash: Sash): [SplitViewItem, SplitViewItem] {
         const before = this.sashItems.indexOf(sash);
         return [this.viewItems[before]!, this.viewItems[before + 1]!];
     }
 
+    /**
+     * @description Returns the position (offset) of the given split view 
+     * relatives to the whole split view container.
+     */
     private __getViewOffset(view: SplitViewItem): number {
         let offset = 0;
 
