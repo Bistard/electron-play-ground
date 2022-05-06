@@ -1,5 +1,10 @@
 
 /**
+ * Represents an array contains only 2 items.
+ */
+export type Pair<T, R> = [T, R];
+
+/**
  * @description Checks if it is the type `object`.
  */
 export function isObject(obj: any): obj is any {

@@ -1,9 +1,10 @@
 import { IListViewRenderer } from "src/base/browser/secondary/listView/listRenderer";
-import { ViewItemType } from "src/base/browser/secondary/listView/listView";
+import { ListItemType } from "src/base/browser/secondary/listView/listView";
 import { ListWidget } from "src/base/browser/secondary/listWidget/listWidget";
 import { IScrollableWidgetExtensionOpts } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
 import { SplitView } from "src/base/browser/secondary/splitView/splitView";
 import { Priority } from "src/base/common/event";
+import { IListItemProvider } from "./base/browser/secondary/listView/listItemProvider";
 
 // [test]
 
@@ -30,34 +31,30 @@ const buildColors = function(start: number[], end: number[], count: number): num
 };
 
 const testItemType = 0;
-const nodeCount = 20;
+const nodeCount = 80;
 const colors = buildColors([255, 255, 0], [0, 255, 255], nodeCount);
 let testNodeIndex = 0;
 
 export class TestNode {
 
     public index: number;
-    public size: number;
     public color: string;
     public type: any = testItemType;
     
-    constructor(index: number, size?: number) {
+    constructor(index: number) {
         this.index = index;
-        this.size = size ?? 100;
         this.color = 'rgb(' + colors[testNodeIndex++]!.join(',') + ')';
     }
 
 }
 
-export class TestRenderer implements IListViewRenderer {
+export class TestRenderer implements IListViewRenderer<TestNode> {
 
-    readonly type: ViewItemType = testItemType;
+    readonly type: ListItemType = testItemType;
 
     constructor() { /* empty */ }
 
-    public render(element: HTMLElement, node: TestNode): void {
-        element.style.height = node.size + 'px';
-
+    public render(element: HTMLElement): void {
         const numberElement = document.createElement('div');
         numberElement.className = 'test-node-number';
         
@@ -73,6 +70,18 @@ export class TestRenderer implements IListViewRenderer {
         
     }
 }   
+
+export class TestListItemProvider implements IListItemProvider<TestNode> {
+
+    getSize(data: TestNode): number {
+        return 50; // the height of each list node
+    }
+
+    getType(data: TestNode): number {
+        return testItemType;
+    }
+
+}
 
 // [basic]
 
@@ -121,11 +130,12 @@ const extensionOpts: IScrollableWidgetExtensionOpts = {
 const listWidget = new ListWidget<TestNode>(
     listWidgetContainer, 
     [new TestRenderer()], 
+    new TestListItemProvider(),
     {
         transformOptimization: true,
         mouseWheelScrollSensitivity: 0.5,
         dragAndDropSupport: true,
-    }
+    },
 );
 
 const items: TestNode[] = [];
