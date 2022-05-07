@@ -171,7 +171,7 @@ export abstract class AbstractScrollbar extends Widget {
      */
     private __sliderOnDrag(event: MouseEvent): void {
         
-        // prevent 
+        // when dragging, prevent triggers any other events.
         event.preventDefault();
 
         // tell the host we did a drag motion

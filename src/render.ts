@@ -1,6 +1,6 @@
 import { IListViewRenderer } from "src/base/browser/secondary/listView/listRenderer";
 import { ListItemType } from "src/base/browser/secondary/listView/listView";
-import { ListWidget } from "src/base/browser/secondary/listWidget/listWidget";
+import { IListMouseEvent, ListWidget } from "src/base/browser/secondary/listWidget/listWidget";
 import { IScrollableWidgetExtensionOpts } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
 import { SplitView } from "src/base/browser/secondary/splitView/splitView";
 import { Priority } from "src/base/common/event";
@@ -83,7 +83,7 @@ export class TestListItemProvider implements IListItemProvider<TestNode> {
 
 }
 
-// [basic]
+// [SplitView Test Code Block]
 
 const documentContainer = document.createElement('div');
 documentContainer.className = 'container';
@@ -134,7 +134,10 @@ const listWidget = new ListWidget<TestNode>(
     {
         transformOptimization: true,
         mouseWheelScrollSensitivity: 0.5,
-        dragAndDropSupport: true,
+        // dnd support
+        dragAndDropProvider: {
+            getDragData: () => null,
+        }
     },
 );
 
@@ -145,14 +148,14 @@ for (let i = 0; i < nodeCount; i++) {
 
 listWidget.splice(0, 0, items);
 
-// this is how to use focus and selections upport in ListWidget
-// listWidget.onClick((event: IListMouseEvent<TestNode>): void => {
-//     if (event.browserEvent.ctrlKey) {
-//         listWidget.toggleSelection(event.index);
-//     } else {
-//         listWidget.toggleFocus(event.index);
-//     }
-// });
+// this is how to use focus and selections support in ListWidget
+listWidget.onClick((event: IListMouseEvent<TestNode>): void => {
+    if (event.browserEvent.ctrlKey) {
+        listWidget.toggleSelection(event.index);
+    } else {
+        listWidget.toggleFocus(event.index);
+    }
+});
 
 listWidget.onDidChangeFocus(res => {
     if (res) {

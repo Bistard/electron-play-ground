@@ -47,19 +47,12 @@ body {
     text-align: center;
 }
 
-.list-view-container .focused {
-    border: 1px solid rgb(197, 160, 160);
-}
 .list-view-container .focused > .test-node-number {
-    
+    color: white;
 }
 
 .list-view-container .selected {
-    border: 1px solid rgb(160, 233, 255);
-    opacity: 80%;
-}
-.list-view-container .selected > .test-node-number {
-    
+    opacity: 70%;
 }
 
 .test-class {
