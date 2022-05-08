@@ -15,7 +15,7 @@ body {
 }
 
 
-.container, .list-widget-container, .editor-container {
+.container, .list-widget-container, .editor-container, .extra-container {
     position: absolute;
 
     height: 100%;
@@ -28,6 +28,11 @@ body {
 .editor-container {
     background-color: burlywood;
 }
+
+.extra-container {
+    background-color: rgb(130, 199, 136);
+}
+
 
 /* test purpose */
 
