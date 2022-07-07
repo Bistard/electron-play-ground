@@ -23,7 +23,7 @@
   "devDependencies": {
     "@types/mocha": "^9.0.0",
     "acorn": "^8.7.0",
-    "electron": "^13.1.7",
+    "electron": "^19.0.8",
     "jsdom": "19.0.0",
     "jsdom-global": "3.0.2",
     "mocha": "^9.1.4",
