@@ -1,6 +1,6 @@
 import { DisposableManager, IDisposable } from "src/base/common/dispose";
 import { PauseableEmitter, Register } from "src/base/common/event";
-import { hash } from "src/base/common/hash";
+import { hash } from "src/base/common/util/hash";
 import { Shortcut } from "src/base/common/keyboard";
 import { IKeyboardService } from "src/code/browser/service/keyboardService";
 import { createDecorator } from "src/code/common/service/instantiationService/decorator";

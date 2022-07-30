@@ -2,7 +2,7 @@ import { IListViewRenderer } from "src/base/browser/secondary/listView/listRende
 import { ListItemType } from "src/base/browser/secondary/listView/listView";
 import { disposeAll, IDisposable } from "src/base/common/dispose";
 import { Emitter, Register } from "src/base/common/event";
-import { hash } from "src/base/common/hash";
+import { hash } from "src/base/common/util/hash";
 
 /**
  * The index changed in {@link ListTrait}.

@@ -3,7 +3,7 @@ import { IListViewRenderer, ListItemRenderer, PipelineRenderer } from "src/base/
 import { ScrollableWidget } from "src/base/browser/secondary/scrollableWidget/scrollableWidget";
 import { ScrollbarType } from "src/base/browser/secondary/scrollableWidget/scrollableWidgetOptions";
 import { DisposableManager, IDisposable } from "src/base/common/dispose";
-import { DomSize, EventType } from "src/base/common/dom";
+import { DomUtility, EventType } from "src/base/common/dom";
 import { DomEmitter, Emitter, Register } from "src/base/common/event";
 import { IRange, ISpliceable, Range, RangeTable } from "src/base/common/range";
 import { IScrollEvent, Scrollable } from "src/base/common/scrollable";
@@ -310,7 +310,7 @@ export class ListView<T> implements IDisposable, ISpliceable<T>, IListView<T> {
         
         this.scrollable = new Scrollable(
             opts.scrollbarSize ? opts.scrollbarSize : 10,
-            DomSize.getContentHeight(container),
+            DomUtility.getContentHeight(container),
             0,
             0
         );

@@ -1,8 +1,22 @@
 
+export type DightInString = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
+
 /**
  * Represents an array contains only 2 items.
  */
 export type Pair<T, R> = [T, R];
+
+/**
+ * Represents an array contains only 3 items.
+ */
+export type Triple<T, R, S> = [T, R, S];
+
+/**
+ * Make all the fields become required.
+ */
+export type AllRequired<T> = {
+    [P in keyof T]-?: T[P];
+};
 
 /**
  * @description Checks if it is the type `object`.
@@ -36,7 +50,25 @@ export function isEmptyObject(obj: any): boolean {
  * @description Checks if it is an array.
  */
 export function isArray(array: any): array is any[] {
-	return Array.isArray(array);
+    return Array.isArray(array);
+}
+
+/**
+ * @returns whether the provided parameter is an Iterable, casting to the given generic
+ */
+ export function isIterable<T>(obj: unknown): obj is Iterable<T> {
+	return !!obj && typeof (obj as any)[Symbol.iterator] === 'function';
+}
+
+/**
+ * @description Determines if the given object is a {@link Promise} or not.
+ * @param obj The given object.
+ */
+export function isPromise(obj: any): obj is Promise<any> {
+    if (typeof obj === 'object' && typeof obj.then === 'function') {
+      return true;
+    }
+    return false;
 }
 
 /**

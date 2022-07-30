@@ -1,4 +1,4 @@
-import { ifOrDefault } from "src/base/common/type";
+import { ifOrDefault } from "src/base/common/util/type";
 
 export const enum ScrollbarType { 
     vertical,

@@ -1,4 +1,19 @@
+import { HexColor } from "src/base/common/color";
 import { IDisposable, toDisposable } from "src/base/common/dispose";
+import { Pair } from "src/base/common/util/type";
+
+/**
+ * @namespace DomStyle A series of types for DOM styling purpose.
+ */
+export namespace DomStyle {
+
+	export type Position = 'static' | 'absolute' | 'fixed' | 'relative' | 'sticky' | 'initial' | 'inherit';
+	export type Display = 'block' | 'compact' | 'flex' | 'inline' | 'inline-block' | 'inline-flex' | 'inline-table' | 'list-item' | 'marker' | 'none' | 'run-in' | 'table' | 'table-caption' | 'table-cell' | 'table-column' | 'table-column-group' | 'table-footer-group' | 'table-header-group' | 'table-row' | 'table-row-group' | 'initial' | 'inherit';
+	export type FontWeight = 'normal' | 'lighter' | 'bold' | 'bolder' | 'initial' | 'inherit' | '100' | '200' | '300' | '400' | '500' | '600' | '700' | '800' | '900';
+	export type Visibility = 'visible' | 'hidden' | 'collapse' | 'initial' | 'inherit';
+	export type Color<T extends string> = HexColor<T>;
+
+}
 
 /**
  * @readonly A enumeration of all HTMLElement event types.
@@ -16,6 +31,8 @@ export const enum EventType {
 	mousemove = 'mousemove',
 	doubleclick = 'dblclick',
 	wheel = 'wheel',
+
+	touchstart = 'touchstart',
 
 	keydown = 'keydown',
 	keyup = 'keyup',
@@ -51,8 +68,8 @@ export const enum Orientation {
  * @param callback The callback function when the event happens.
  * @returns A disposable to remove the listener from the target.
  */
-export function addDisposableListener(domNode: EventTarget, eventType: EventType, callback: (event: any) => void): IDisposable {
-	domNode.addEventListener(eventType, callback);
+export function addDisposableListener<T extends keyof GlobalEventHandlersEventMap>(domNode: EventTarget, eventType: T, callback: (event: GlobalEventHandlersEventMap[T]) => void): IDisposable {
+	domNode.addEventListener(eventType, callback as any);
 
 	let disposed = false;
 
@@ -65,33 +82,9 @@ export function addDisposableListener(domNode: EventTarget, eventType: EventType
 			return;
 		}
 
-		domNode.removeEventListener(eventType, callback);
+		domNode.removeEventListener(eventType, callback as any);
 		disposed = true;
 	});
-}
-
-/**
- * @description Clears all the children DOM nodes from a provided node.
- * @param node The parent DOM node.
- * @returns The number of cleared nodes.
- */
-export function clearChildrenNodes(node: HTMLElement): number {
-	let cnt = 0;
-	while (node.firstChild) {
-		node.firstChild.remove();
-		cnt++;
-	}
-	return cnt;
-}
-
-/**
- * @description Removes the given node from its parent in DOM tree.
- * @param node The given DOMElement.
- */
-export function removeNodeFromParent(node: HTMLElement): void {
-	if (node.parentElement) {
-		node.parentElement.removeChild(node);
-	}
 }
 
 /**
@@ -105,17 +98,17 @@ export function formatSpan(text: string): string {
 }
 
 /**
- * @description A uitility namespace that contains all the helper functions to 
- * get the size-related attributes from a DOM element.
+ * @description A uitility namespace that contains all the helper functions 
+ * relates to DOM.
  * 
- * @warn The namespace does NOT work for IE8 browser, see 
+ * @warn The size-related methods does NOT work for IE8 browser, see 
  * 	https://stackoverflow.com/questions/5227909/how-to-get-an-elements-padding-value-using-javascript AND
  * 	https://developer.mozilla.org/en-US/docs/Web/API/Window/getComputedStyle
  * 
  * @warn If the HTMLElement has not been added into the DOM tree, some methods
- * under the namespace will NOT work properly (returns magic number).
+ * under the namespace will NOT work properly.
  */
-export namespace DomSize
+export namespace DomUtility
 {
 
 	/**
@@ -191,6 +184,8 @@ export namespace DomSize
 	/**
 	 * @description Get the height of the content excluding padding and border.
 	 * @param element The HTMLElement.
+	 * 
+	 * @note If the element is NOT in the DOM tree, the behaviour is undefined.
 	 */
 	export function getContentHeight(element: HTMLElement): number {
 		const padding = getPaddingTop(element) + getPaddingBottom(element);
@@ -201,11 +196,81 @@ export namespace DomSize
 	/**
 	 * @description Get the width of the content excluding padding and border.
 	 * @param element The HTMLElement.
+	 * 
+	 * @note If the element is NOT in the DOM tree, the behaviour is undefined.
 	 */
-	 export function getContentWidth(element: HTMLElement): number {
+	export function getContentWidth(element: HTMLElement): number {
 		const padding = getPaddingLeft(element) + getPaddingRight(element);
 		const border  = getBorderLeft(element) + getBorderRight(element);
 		return element.offsetWidth - padding - border;
+	}
+
+	// [method - click]
+
+	/**
+	 * @description Returns the relative click coordinates to the target element.
+	 * @param event The {@link MouseEvent}.
+	 * @param target The {@link EventTarget} we are relative with
+	 */
+	export function getRelativeClick(event: MouseEvent, target?: EventTarget): Pair<number, number> {
+		let element = (target ?? event.currentTarget) as HTMLElement | null;
+		if (element === null) {
+			throw new Error('invalid event target');
+		}
+		let box: DOMRect = element.getBoundingClientRect();
+		return [
+			event.clientX - box.left,
+			event.clientY - box.top
+		];
+	}
+
+	/**
+	 * @description Determines if the given event is mouse right click.
+	 */
+	export function isMouseRightClick(event: UIEvent): boolean {
+		return event instanceof MouseEvent && event.button === 2;
+	}
+
+	// [method - type]
+
+	/**
+	 * @description Check if the given HTMLElement is considered as a input type.
+	 */
+	export function isInputElement(target: HTMLElement): boolean {
+		return target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+	}
+
+	// [method - DOM]
+
+	/**
+	 * @description Determines if the given node is in the dom tree.
+	 */
+	export function ifInDomTree(node: Node): boolean {
+		return node.isConnected;
+	}
+
+	/**
+	 * @description Clears all the children DOM nodes from a provided node.
+	 * @param node The parent DOM node.
+	 * @returns The number of cleared nodes.
+	 */
+	export function clearChildrenNodes(node: HTMLElement): number {
+		let cnt = 0;
+		while (node.firstChild) {
+			node.firstChild.remove();
+			cnt++;
+		}
+		return cnt;
+	}
+
+	/**
+	 * @description Removes the given node from its parent in DOM tree.
+	 * @param node The given DOMElement.
+	 */
+	export function removeNodeFromParent(node: HTMLElement): void {
+		if (node.parentElement) {
+			node.parentElement.removeChild(node);
+		}
 	}
 
 }

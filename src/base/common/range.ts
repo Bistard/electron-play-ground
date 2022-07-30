@@ -1,24 +1,31 @@
-import { IMeasureable } from "src/base/common/size";
+import { IMeasureable } from "src/base/common/util/size";
 
 export interface ISpliceable<T> {
-	splice(index: number, deleteCount: number, itemsToInsert: T[]): void;
+	splice(index: number, deleteCount: number, itemsToInsert?: T[]): T[] | void;
 }
 
 export interface IRange {
-	start: number,
-	end: number
+	/**
+	 * Start of the range.
+	 */
+	start: number;
+
+	/**
+	 * End of the range.
+	 */
+	end: number;
 }
 
 export interface IRangeList {
 	/**
 	 * The range of the list.
 	 */
-	range: IRange,
+	range: IRange;
 	
 	/**
 	 * The size of each item in the range.
 	 */
-	size: number
+	size: number;
 }
 
 /**
@@ -225,7 +232,7 @@ export class RangeTable {
 	/**
      * @description Removes items from an {@link RangeTable} and, if necessary, 
 	 * inserts new items in their place.
-     * @param start The zero-based location in the {@link RangeTable} from which 
+     * @param index The zero-based location in the {@link RangeTable} from which 
 	 * to start removing items.
      * @param deleteCount The number of items to remove.
      * @param items Elements to insert into the {@link RangeTable} in place of 
