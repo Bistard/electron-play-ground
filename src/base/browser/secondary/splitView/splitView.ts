@@ -1,9 +1,9 @@
 import { Sash } from "src/base/browser/basic/sash/sash";
 import { SplitViewItem } from "src/base/browser/secondary/splitView/splitViewItem";
 import { IDisposable } from "src/base/common/dispose";
-import { DomSize, Orientation } from "src/base/common/dom";
+import { DomUtility, Orientation } from "src/base/common/dom";
 import { Priority } from "src/base/common/event";
-import { IDimension } from "src/base/common/size";
+import { IDimension } from "src/base/common/util/size";
 
 export interface IViewOpts {
 
@@ -72,7 +72,7 @@ export class SplitView implements ISplitView {
         this.viewContainer = document.createElement('div');
         this.viewContainer.className = 'view-container';
 
-        this.size = DomSize.getContentWidth(container);
+        this.size = DomUtility.getContentWidth(container);
 
         this.viewItems = [];
         this.sashItems = [];
@@ -143,6 +143,11 @@ export class SplitView implements ISplitView {
                 view2.size -= e.deltaX;
                 view1.render();
                 view2.render(this.__getViewOffset(view2) + e.deltaX);
+                
+                console.log('View1 size is: ', view1.size);
+                console.log('View2 size is: ', view2.size);
+                console.log('Their sum is: ', view1.size + view2.size)
+
             });
 
             sash.onDidReset(() => {
@@ -191,9 +196,9 @@ export class SplitView implements ISplitView {
 
         for (const view of this.viewItems) {
             if (view.flexible()) {
-                if (view.resizePriority === Priority.Low) {
+                if (view.getResizePriority() === Priority.Low) {
                     low.push(view);
-                } else if (view.resizePriority === Priority.Normal) {
+                } else if (view.getResizePriority() === Priority.Normal) {
                     normal.push(view);
                 } else {
                     high.push(view);
@@ -221,7 +226,7 @@ export class SplitView implements ISplitView {
             
             for (const group of [high, normal, low]) { 
                 for (const flexView of group) {
-                    const spare = flexView.shrinkableSpace(); // TODO
+                    const spare = flexView.getShrinkableSpace(); // TODO
                     if (spare >= offset) {
                         flexView.size -= offset; // TODO
                         offset = 0;
@@ -251,7 +256,7 @@ export class SplitView implements ISplitView {
             
             for (const group of [high, normal, low]) {
                 for (const flexView of group) {
-                    const spare = flexView.wideableSpace();
+                    const spare = flexView.getWideableSpace();
                     if (spare >= offset) {
                         flexView.size += offset;
                         offset = 0;
