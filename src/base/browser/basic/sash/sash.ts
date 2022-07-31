@@ -248,19 +248,7 @@ export class Sash extends Disposable implements ISash {
         }
 
         this.__register(addDisposableListener(this._element, EventType.mousedown, e => this._initDrag(e)));
-        this.__register(addDisposableListener(this._element, EventType.doubleclick,
-            () => {
-                // reset position
-                if (this._orientation === Orientation.Vertical) {
-                    this._element.style.left = this._defaultPosition + 'px';
-                } else {
-                    this._element.style.top = this._defaultPosition + 'px';
-                }
-                
-                // fire event
-                this._onDidReset.fire();
-            }
-        ));
+        this.__register(addDisposableListener(this._element, EventType.doubleclick, () => this._onDidReset.fire()));
     }
 
     // [private helper methods]
