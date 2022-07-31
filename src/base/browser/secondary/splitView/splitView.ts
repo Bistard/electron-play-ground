@@ -368,17 +368,25 @@ export class SplitView implements ISplitView {
      * @param sash The target {@link ISash}.
      */
     private __onDidSashEnd(event: ISashEvent, sash: ISash): void {
-        const index = this.sashItems.indexOf(sash);
+        const currSashIndex = this.sashItems.indexOf(sash);
         
-        const prevSash = this.sashItems[index - 1];
-        const nextSash = this.sashItems[index + 1];
+        const prevSash = this.sashItems[currSashIndex - 1];
+        const nextSash = this.sashItems[currSashIndex + 1];
         
-        if (prevSash && event.currentX < prevSash.range.end) {
-            prevSash.range.end = event.currentX;
+        if (prevSash) {
+            const view1 = this.viewItems[currSashIndex - 1]!;
+            const view2 = this.viewItems[currSashIndex]!;
+            const prevSashPosition = event.currentX - view2.getSize();
+            prevSash.range.end = Math.min(event.currentX, prevSashPosition + view1.getWideableSpace(),
+            prevSashPosition + view2.getShrinkableSpace());
         }
 
-        if (nextSash && event.currentX > nextSash.range.start) {
-            nextSash.range.start = event.currentX;
+        if (nextSash) {
+            const view1 = this.viewItems[currSashIndex + 1]!;
+            const view2 = this.viewItems[currSashIndex + 2]!;
+            const nextSashPosition = event.currentX + view1.getSize();
+            nextSash.range.start = Math.max(event.currentX, nextSashPosition - view2.getWideableSpace(), 
+            nextSashPosition - view1.getShrinkableSpace());
         }
     }
 }

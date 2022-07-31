@@ -101,12 +101,12 @@ extraContainer.className = 'extra-container';
 const splitView = new SplitView(documentContainer, [{
         element: listWidgetContainer,
         minimumSize: 300,
-        maximumSize: 400,
+        maximumSize: 1200,
         initSize: 300,
         priority: Priority.Low
     }, {
         element: editorContainer,
-        minimumSize: 0,
+        minimumSize: 100,
         maximumSize: Number.POSITIVE_INFINITY,
         initSize: 600,
         priority: Priority.Low
