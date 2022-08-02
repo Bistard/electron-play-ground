@@ -61,6 +61,9 @@ class Main {
                 this.winMain!.show();
             });
 
+            // auto opens develope tools
+            this.winMain!.webContents.openDevTools({mode: 'detach', activate: true});
+
             // titleBar listeners
             this.winMain.on('maximize', () => {
                 this.winMain!.webContents.send('isMaximized');
@@ -131,6 +134,8 @@ class Main {
             ipcMain.on('test', (_event, data) => {
                 console.log(data);
             });
+
+            
 
         });
     }
