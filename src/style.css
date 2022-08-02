@@ -16,7 +16,7 @@ body {
 }
 
 
-.container, .list-widget-container, .editor-container, .extra-container {
+.container, .list-widget-container, .editor-container, .extra-container1, .extra-container2, .nested-splitView-container, .nested-container1, .nested-container2 {
     position: absolute;
 
     height: 100%;
@@ -30,8 +30,20 @@ body {
     background-color: burlywood;
 }
 
-.extra-container {
+.extra-container1 {
     background-color: rgb(130, 199, 136);
+}
+
+.extra-container2 {
+    background-color: rgb(223, 144, 120);
+}
+
+.nested-container1 {
+    background-color: rgb(199, 194, 130);
+}
+
+.nested-container2 {
+    background-color: rgb(214, 139, 195);
 }
 
 

@@ -5,6 +5,7 @@ import { IScrollableWidgetExtensionOpts } from "src/base/browser/secondary/scrol
 import { SplitView } from "src/base/browser/secondary/splitView/splitView";
 import { Priority } from "src/base/common/event";
 import { IListItemProvider } from "./base/browser/secondary/listView/listItemProvider";
+import { Orientation } from "src/base/common/dom";
 
 // [test]
 
@@ -95,10 +96,47 @@ listWidgetContainer.className = 'list-widget-container';
 const editorContainer = document.createElement('div');
 editorContainer.className = 'editor-container';
 
-const extraContainer = document.createElement('div');
-extraContainer.className = 'extra-container';
+const extraContainer1 = document.createElement('div');
+extraContainer1.className = 'extra-container1';
 
-const splitView = new SplitView(documentContainer, [{
+const extraContainer2 = document.createElement('div');
+extraContainer2.className = 'extra-container2';
+
+const nestedSplitViewContainer = document.createElement('div');
+nestedSplitViewContainer.className = 'nested-splitView-container';
+
+const nestedContainer1 = document.createElement('div');
+nestedContainer1.className = 'nested-container1';
+
+const nestedContainer2 = document.createElement('div');
+nestedContainer2.className = 'nested-container2';
+
+const outerSplitView = new SplitView(documentContainer, { 
+    orientation: Orientation.Horizontal, 
+    viewOpts: [{
+        element: extraContainer2,
+        minimumSize: 300,
+        maximumSize: 1200,
+        initSize: 300,
+        priority: Priority.Low
+    }, {
+        element: nestedContainer1,
+        minimumSize: 100,
+        maximumSize: Number.POSITIVE_INFINITY,
+        initSize: 300,
+        priority: Priority.Low
+    }, {
+        element: nestedSplitViewContainer,
+        minimumSize: 0,
+        maximumSize: Number.POSITIVE_INFINITY,
+        initSize: 0,
+        priority: Priority.High
+    }]}
+);
+
+const nestedSplitView = new SplitView(nestedSplitViewContainer, { 
+    orientation: Orientation.Vertical, 
+    viewOpts: [{
         element: listWidgetContainer,
         minimumSize: 300,
         maximumSize: 1200,
@@ -108,16 +146,15 @@ const splitView = new SplitView(documentContainer, [{
         element: editorContainer,
         minimumSize: 100,
         maximumSize: Number.POSITIVE_INFINITY,
-        initSize: 600,
+        initSize: 100,
         priority: Priority.Low
     }, {
-        element: extraContainer,
+        element: extraContainer1,
         minimumSize: 0,
         maximumSize: Number.POSITIVE_INFINITY,
         initSize: 0,
         priority: Priority.High
-    }]
-);
+}]});
 
 // [end]
 
