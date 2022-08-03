@@ -6,6 +6,7 @@ import { SplitView } from "src/base/browser/secondary/splitView/splitView";
 import { Priority } from "src/base/common/event";
 import { IListItemProvider } from "./base/browser/secondary/listView/listItemProvider";
 import { Orientation } from "src/base/common/dom";
+import { ISampleView, SampleView } from "src/sample/sampleView";
 
 // [test]
 
@@ -93,40 +94,35 @@ document.body.appendChild(documentContainer);
 const listWidgetContainer = document.createElement('div');
 listWidgetContainer.className = 'list-widget-container';
 
-const editorContainer = document.createElement('div');
-editorContainer.className = 'editor-container';
+const sampleViews: ISampleView[] = [];
+for (let i = 0; i < 20; i++) {
+    sampleViews.push(new SampleView({}));
+}
 
-const extraContainer1 = document.createElement('div');
-extraContainer1.className = 'extra-container1';
+let cnt = 0;
+const getNextSampleView = () => {
+    return sampleViews[cnt++]!.element;
+}
 
-const extraContainer2 = document.createElement('div');
-extraContainer2.className = 'extra-container2';
-
-const nestedSplitViewContainer = document.createElement('div');
-nestedSplitViewContainer.className = 'nested-splitView-container';
-
-const nestedContainer1 = document.createElement('div');
-nestedContainer1.className = 'nested-container1';
-
-const nestedContainer2 = document.createElement('div');
-nestedContainer2.className = 'nested-container2';
+const nestedSampleView1 = new SampleView({ number: false });
+const nestedSampleView2 = new SampleView({ number: false });
 
 const outerSplitView = new SplitView(documentContainer, { 
     orientation: Orientation.Horizontal, 
     viewOpts: [{
-        element: extraContainer2,
+        element: getNextSampleView(),
         minimumSize: 300,
         maximumSize: 1200,
         initSize: 300,
         priority: Priority.Low
     }, {
-        element: nestedContainer1,
+        element: nestedSampleView1.element,
         minimumSize: 100,
         maximumSize: Number.POSITIVE_INFINITY,
         initSize: 300,
         priority: Priority.Low
     }, {
-        element: nestedSplitViewContainer,
+        element: nestedSampleView2.element,
         minimumSize: 0,
         maximumSize: Number.POSITIVE_INFINITY,
         initSize: 0,
@@ -134,7 +130,38 @@ const outerSplitView = new SplitView(documentContainer, {
     }]}
 );
 
-const nestedSplitView = new SplitView(nestedSplitViewContainer, { 
+const nestedSplitView1 = new SplitView(nestedSampleView1.element, {
+    orientation: Orientation.Vertical,
+    viewOpts: [
+        {
+            element: getNextSampleView(),
+            minimumSize: 100,
+            maximumSize: 300,
+            initSize: 200,
+            priority: Priority.Low
+        }, {
+            element: getNextSampleView(),
+            minimumSize: 100,
+            maximumSize: 300,
+            initSize: 200,
+            priority: Priority.Low
+        }, {
+            element: getNextSampleView(),
+            minimumSize: 100,
+            maximumSize: Number.POSITIVE_INFINITY,
+            initSize: 200,
+            priority: Priority.High
+        }, {
+            element: getNextSampleView(),
+            minimumSize: 100,
+            maximumSize: Number.POSITIVE_INFINITY,
+            initSize: 200,
+            priority: Priority.Normal
+        }
+    ]
+});
+
+const nestedSplitView2 = new SplitView(nestedSampleView2.element, { 
     orientation: Orientation.Vertical, 
     viewOpts: [{
         element: listWidgetContainer,
@@ -143,13 +170,13 @@ const nestedSplitView = new SplitView(nestedSplitViewContainer, {
         initSize: 300,
         priority: Priority.Low
     }, {
-        element: editorContainer,
+        element: getNextSampleView(),
         minimumSize: 100,
         maximumSize: Number.POSITIVE_INFINITY,
         initSize: 100,
         priority: Priority.Low
     }, {
-        element: extraContainer1,
+        element: getNextSampleView(),
         minimumSize: 0,
         maximumSize: Number.POSITIVE_INFINITY,
         initSize: 0,
