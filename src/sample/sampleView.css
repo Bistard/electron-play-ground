@@ -1,0 +1,21 @@
+
+.sample-view {
+    position: absolute;
+
+    height: 100%;
+    width: 100%;
+
+    background-color: rgb(255, 255, 255);
+    overflow: hidden;
+}
+
+.sample-view > .sample-view-number {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+
+    font-weight: bold;
+    font-size: 30px;
+    user-select: none;
+    text-align: center;
+}
