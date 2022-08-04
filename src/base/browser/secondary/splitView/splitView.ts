@@ -24,10 +24,16 @@ export interface ISplitView extends Disposable {
     /**
      * @description Construsts a new {@link SplitViewItem} and add it into the 
      * split-view.
+     * @param opt Options for constructing the view.
      * @note This will rerender the whole split-view.
      */
     addView(opt: ISplitViewItemOpts): void;
 
+    /**
+     * @description Remove an exsited {@link SplitViewItem} from the SplitView.
+     * @param index The index of the to-be-removed view.
+     * @note This will rerender the whole split-view.
+     */
     removeView(index: number): ISplitViewItemOpts;
 
     // TODO
