@@ -35,6 +35,6 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "i18next": "^21.8.16"
+    "i18next": "^21.10.0"
   }
 }
