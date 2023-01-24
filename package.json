@@ -22,7 +22,7 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "@types/mocha": "^9.1.1",
-    "acorn": "^8.8.0",
+    "acorn": "^8.8.2",
     "electron": "^13.6.9",
     "jsdom": "19.0.0",
     "jsdom-global": "3.0.2",
