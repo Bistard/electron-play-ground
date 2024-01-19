@@ -1,6 +1,4 @@
-
 import * as Path from'path';
-
 import { BrowserWindow, ipcMain, app, dialog, Menu } from 'electron';
 
 /**

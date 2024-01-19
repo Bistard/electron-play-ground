@@ -5,9 +5,9 @@
   "main": "./dist/main-bundle.js",
   "scripts": {
     "build": "webpack --config webpack.config.js --stats-error-details",
-    "watch": "tsc -w",
     "start": "npm run build && electron .",
-    "test": "mocha --ui tdd -r jsdom-global/register"
+    "test": "mocha --ui tdd -r jsdom-global/register",
+    "watch": ""
   },
   "repository": "https://github.com/electron/electron-quick-start-typescript",
   "keywords": [
@@ -35,6 +35,11 @@
     "webpack-cli": "^4.10.0"
   },
   "dependencies": {
-    "i18next": "^21.8.16"
+    "prosemirror-example-setup": "^1.2.2",
+    "prosemirror-markdown": "^1.12.0",
+    "prosemirror-model": "^1.18.1",
+    "prosemirror-state": "^1.4.2",
+    "prosemirror-transform": "^1.7.0",
+    "prosemirror-view": "^1.29.0"
   }
 }
